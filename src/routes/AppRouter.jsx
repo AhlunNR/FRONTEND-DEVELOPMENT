@@ -1,23 +1,32 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import Landing from '../pages/Landing';
+import Login from '../pages/Login';
 import AppLayout from '../layouts/AppLayout';
 import AddTransaction from '../pages/add-transaction';
-
-// Mockup Pages (Nanti kita buat file aslinya)
-const Dashboard = () => <div className="p-4">Halaman Dashboard</div>;
-const Transactions = () => <div className="p-4">Daftar Transaksi</div>;
-
+import Dashboard from '../pages/dashboard';
+import Transactions from '../pages/transactions';
+import Insights from '../pages/insights';
+import Profile from '../pages/profile';
 
 export default function AppRouter() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* AppLayout akan membungkus semua halaman utama */}
-        <Route path="/" element={<AppLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="transactions" element={<Transactions />} />
-          <Route path="add" element={<AddTransaction />} />
+        {/* Rute publik */}
+        <Route path="/" element={<Landing />} />
+        <Route path="/login" element={<Login />} />
+
+        {/* Rute internal aplikasi */}
+        <Route element={<AppLayout />}>
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/add" element={<AddTransaction />} />
+          <Route path="/insights" element={<Insights />} />
+          <Route path="/profile" element={<Profile />} />
         </Route>
+
+        {/* Fallback jika rute tidak ditemukan */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );

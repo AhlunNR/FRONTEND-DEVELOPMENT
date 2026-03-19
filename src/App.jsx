@@ -1,4 +1,4 @@
-// src/App.jsx
+// Komponen root aplikasi
 import AppRouter from './routes/AppRouter';
 
 function App() {
