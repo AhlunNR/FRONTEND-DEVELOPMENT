@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import { flushSync } from 'react-dom';
 
 const ModeContext = createContext();
 
@@ -38,7 +39,29 @@ export function ModeProvider({ children }) {
   // --- SEMUA FUNGSI TOGGLE ---
   const toggleMode = () => setMode((prev) => (prev === 'umkm' ? 'personal' : 'umkm'));
   
-  const toggleTheme = () => setTheme((prev) => (prev === 'light' ? 'dark' : 'light'));
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light';
+    
+    const applyTheme = () => {
+      if (nextTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      setTheme(nextTheme);
+    };
+
+    if (!document.startViewTransition) {
+      applyTheme();
+      return;
+    }
+
+    document.startViewTransition(() => {
+      flushSync(() => {
+        applyTheme();
+      });
+    });
+  };
 
   const toggleNotifications = () => setNotifications((prev) => !prev);
 

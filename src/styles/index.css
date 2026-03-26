@@ -83,3 +83,30 @@
     @apply font-sans;
   }
 }
+
+/* Theme Toggle View Transition */
+::view-transition-group(root) {
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+::view-transition-new(root) {
+  animation: reveal-from-top-right 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  z-index: 1;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  animation: none;
+  z-index: -1;
+  mix-blend-mode: normal;
+}
+
+@keyframes reveal-from-top-right {
+  from {
+    clip-path: circle(0% at 100% 0%);
+  }
+  to {
+    clip-path: circle(150vmax at 100% 0%);
+  }
+}
