@@ -47,5 +47,10 @@
     "postcss": "^8.5.8",
     "tailwindcss": "^3.4.19",
     "vite": "^8.0.0"
+  },
+  "overrides": {
+    "eslint": "$eslint",
+    "react": "$react",
+    "react-dom": "$react-dom"
   }
 }

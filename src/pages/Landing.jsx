@@ -67,9 +67,9 @@ const Landing = () => {
       </div>
 
       {/* 2. Navigasi Header */}
-      <div className="fixed top-0 left-0 w-full z-50">
+      <div className="fixed top-0 left-0 w-full z-50 pointer-events-none">
         {/* Mobile Nav */}
-        <div className="md:hidden h-screen pointer-events-none">
+        <div className="md:hidden h-screen">
            <StaggeredMenu
              position="right"
              items={menuItems}
@@ -79,7 +79,7 @@ const Landing = () => {
            />
         </div>
         {/* Desktop Nav */}
-        <div className="hidden md:block">
+        <div className="hidden md:block pointer-events-auto">
            <CardNav
              items={desktopItems}
              baseColor="rgba(13, 7, 22, 0.4)" // Dark glass base
