@@ -7,6 +7,7 @@ import Dashboard from '../pages/dashboard';
 import Transactions from '../pages/transactions';
 import Insights from '../pages/insights';
 import Profile from '../pages/profile';
+import Settings from '../pages/profile/settings';
 import Gamification from '../pages/gamification';
 
 export default function AppRouter() {
@@ -25,6 +26,7 @@ export default function AppRouter() {
           <Route path="/insights" element={<Insights />} />
           <Route path="/gamification" element={<Gamification />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/settings" element={<Settings />} /> 
         </Route>
 
         {/* Fallback jika rute tidak ditemukan */}

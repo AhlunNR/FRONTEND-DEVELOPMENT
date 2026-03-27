@@ -3,19 +3,21 @@ import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useMode } from "@/contexts/ModeContext";
-import { Trophy, Sparkles, HeartPulse, Activity, Star, ChevronRight, CheckCircle, Flame, Medal, Lock } from "lucide-react";
+import { Trophy, Sparkles, HeartPulse, Activity, Star, ChevronRight, CheckCircle, Flame, Medal, Lock, X } from "lucide-react";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 
 export default function DesktopGamification() {
-  const { mode } = useMode(); 
+  const { mode, t } = useMode(); 
   const isPersonal = mode === 'personal';
   const themeColor = isPersonal ? 'text-purple-600' : 'text-blue-600';
 
   const [xp, setXp] = useState(850);
+  
+  // State misi menggunakan key translasi agar bisa berubah bahasa
   const [missions, setMissions] = useState([
-    { id: 1, title: "Catat pengeluaran hari ini", xp: 20, done: true },
-    { id: 2, title: "Review anggaran mingguan", xp: 50, done: false },
-    { id: 3, title: "Simpan 10% sisa budget", xp: 150, done: false },
+    { id: 1, titleKey: "mission_daily_exp", xp: 20, done: true, defaultText: "Catat pengeluaran hari ini" },
+    { id: 2, titleKey: "mission_review_budget", xp: 50, done: false, defaultText: "Review anggaran mingguan" },
+    { id: 3, titleKey: "mission_save_budget", xp: 150, done: false, defaultText: "Simpan 10% sisa budget" },
   ]);
 
   const [unlockedAchievements, setUnlockedAchievements] = useState([
@@ -25,12 +27,13 @@ export default function DesktopGamification() {
   const [celebration, setCelebration] = useState({ show: false, title: "", message: "", type: "" });
 
   const getLevelData = (currentXp) => {
-    if (currentXp >= 1500) return { level: 5, title: "Pakar Finansial", progress: 100, currentXP: currentXp, maxXP: 1500, nextLevel: 5 };
-    if (currentXp >= 1000) return { level: 4, title: "Master Finansial", progress: ((currentXp - 1000) / 500) * 100, currentXP: currentXp, maxXP: 1500, nextLevel: 5 };
-    if (currentXp >= 600) return { level: 3, title: "Bisa Finansial", progress: ((currentXp - 600) / 400) * 100, currentXP: currentXp, maxXP: 1000, nextLevel: 4 };
-    if (currentXp >= 300) return { level: 2, title: "Paham Finansial", progress: ((currentXp - 300) / 300) * 100, currentXP: currentXp, maxXP: 600, nextLevel: 3 };
-    if (currentXp >= 100) return { level: 1, title: "Pelajar Finansial", progress: ((currentXp - 100) / 200) * 100, currentXP: currentXp, maxXP: 300, nextLevel: 2 };
-    return { level: 0, title: "Pemula Finansial", progress: (currentXp / 100) * 100, currentXP: currentXp, maxXP: 100, nextLevel: 1 };
+    // Judul level menggunakan fungsi t()
+    if (currentXp >= 1500) return { level: 5, title: t('level_5_title') || "Pakar Finansial", progress: 100, currentXP: currentXp, maxXP: 1500, nextLevel: 5 };
+    if (currentXp >= 1000) return { level: 4, title: t('level_4_title') || "Master Finansial", progress: ((currentXp - 1000) / 500) * 100, currentXP: currentXp, maxXP: 1500, nextLevel: 5 };
+    if (currentXp >= 600) return { level: 3, title: t('level_3_title') || "Bisa Finansial", progress: ((currentXp - 600) / 400) * 100, currentXP: currentXp, maxXP: 1000, nextLevel: 4 };
+    if (currentXp >= 300) return { level: 2, title: t('level_2_title') || "Paham Finansial", progress: ((currentXp - 300) / 300) * 100, currentXP: currentXp, maxXP: 600, nextLevel: 3 };
+    if (currentXp >= 100) return { level: 1, title: t('level_1_title') || "Pelajar Finansial", progress: ((currentXp - 100) / 200) * 100, currentXP: currentXp, maxXP: 300, nextLevel: 2 };
+    return { level: 0, title: t('level_0_title') || "Pemula Finansial", progress: (currentXp / 100) * 100, currentXP: currentXp, maxXP: 100, nextLevel: 1 };
   };
 
   const levelData = getLevelData(xp);
@@ -50,7 +53,12 @@ export default function DesktopGamification() {
   };
 
   const triggerLevelUpAnimation = (newLevelData) => {
-    setCelebration({ show: true, title: "Level Up! 🎉", message: `Selamat! Kamu mencapai peringkat ${newLevelData.title}!`, type: "level" });
+    setCelebration({ 
+      show: true, 
+      title: `${t('level_up_notif') || "Level Up!"} 🎉`, 
+      message: `${t('congrats_reach') || "Selamat! Kamu mencapai peringkat"} ${newLevelData.title}!`, 
+      type: "level" 
+    });
     const duration = 3000;
     const end = Date.now() + duration;
     const frame = () => {
@@ -63,7 +71,12 @@ export default function DesktopGamification() {
   };
 
   const triggerAchievementAnimation = (badgeTitle) => {
-    setCelebration({ show: true, title: "Pencapaian Terbuka! 🏆", message: `Satu lagi koleksi badge kamu: ${badgeTitle}`, type: "achievement" });
+    setCelebration({ 
+      show: true, 
+      title: `${t('achievement_unlocked') || "Pencapaian Terbuka!"} 🏆`, 
+      message: `${t('new_badge_collect') || "Satu lagi koleksi badge kamu:"} ${badgeTitle}`, 
+      type: "achievement" 
+    });
     const duration = 2000;
     const end = Date.now() + duration;
     const frame = () => {
@@ -92,8 +105,8 @@ export default function DesktopGamification() {
       {/* Header */}
       <AnimatedContent distance={30} delay={0.1} direction="vertical">
         <header>
-          <h1 className="text-3xl font-extrabold tracking-tight">Gamification</h1>
-          <p className="text-sm text-muted-foreground mt-1">Pantau level finansial dan kesehatan keuanganmu.</p>
+          <h1 className="text-3xl font-extrabold tracking-tight">{t('achievements') || "Gamification"}</h1>
+          <p className="text-sm text-muted-foreground mt-1">{t('achievements_desc') || "Pantau level finansial dan kesehatan keuanganmu."}</p>
         </header>
       </AnimatedContent>
 
@@ -103,7 +116,7 @@ export default function DesktopGamification() {
         <div className="space-y-6">
           <AnimatedContent distance={40} delay={0.2} direction="vertical">
             <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
-              <Trophy className={`w-5 h-5 ${themeColor}`} /> Level Finansial
+              <Trophy className={`w-5 h-5 ${themeColor}`} /> {t('financial_level') || "Level Finansial"}
             </h2>
             
             <Card className="border-none shadow-sm relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 w-full p-2">
@@ -121,21 +134,23 @@ export default function DesktopGamification() {
                   <div className="flex-1">
                     <h3 className="text-xl font-bold">{levelData.title}</h3>
                     <p className="text-sm text-muted-foreground mt-1 flex items-center gap-1">
-                      Kamu di top 15% pengguna! <Sparkles className="w-4 h-4 text-amber-500" />
+                      {t('top_user_percent') || "Kamu di top 15% pengguna!"} <Sparkles className="w-4 h-4 text-amber-500" />
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm font-bold">
-                    <span>Progres ke Level {levelData.nextLevel}</span>
+                    <span>{t('progress_to') || "Progres ke Level"} {levelData.nextLevel}</span>
                     <span className="text-amber-600 dark:text-amber-400">{levelData.currentXP} / {levelData.maxXP} XP</span>
                   </div>
                   <div className="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner flex">
                     <div className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full transition-all duration-1000" style={{ width: `${levelData.progress}%` }}></div>
                   </div>
                   <p className="text-xs text-muted-foreground font-medium">
-                    {levelData.level < 5 ? `Kumpulkan ${levelData.maxXP - levelData.currentXP} XP lagi untuk naik level.` : "Selamat, kamu mencapai level maksimal!"}
+                    {levelData.level < 5 
+                      ? `${t('collect_more_prefix') || "Kumpulkan"} ${levelData.maxXP - levelData.currentXP} XP ${t('collect_more_suffix') || "lagi untuk naik level."}` 
+                      : t('max_level_reached') || "Selamat, kamu mencapai level maksimal!"}
                   </p>
                 </div>
                 
@@ -147,12 +162,12 @@ export default function DesktopGamification() {
             <Card className="bg-card border-border shadow-sm">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base flex items-center justify-between">
-                  Misi Harian 
+                  {t('daily_missions') || "Misi Harian"} 
                   <span className="flex items-center gap-1 text-xs font-bold bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 px-2 py-1 rounded-full">
-                    <Flame className="w-3.5 h-3.5" /> 5 Day Streak!
+                    <Flame className="w-3.5 h-3.5" /> {t('streak_days') || "5 Day Streak!"}
                   </span>
                 </CardTitle>
-                <CardDescription className="text-sm">Selesaikan untuk dapatkan XP tambahan</CardDescription>
+                <CardDescription className="text-sm">{t('mission_xp_desc') || "Selesaikan untuk dapatkan XP tambahan"}</CardDescription>
               </CardHeader>
               <CardContent className="p-5 space-y-4">
                 {missions.map((mission) => (
@@ -164,12 +179,12 @@ export default function DesktopGamification() {
                         <button onClick={() => handleClaimMission(mission.id, mission.xp)} className="w-5 h-5 rounded-full border-2 border-slate-300 dark:border-slate-600 hover:border-emerald-500 hover:bg-emerald-50 transition-colors" />
                       )}
                       <span className={`text-sm font-bold ${mission.done ? 'text-muted-foreground line-through' : ''}`}>
-                        {mission.title}
+                        {t(mission.titleKey) || mission.defaultText}
                       </span>
                     </div>
                     {mission.done ? (
                       <span className="text-xs font-bold text-emerald-500 bg-emerald-100 dark:bg-emerald-900/30 px-2 py-1 rounded-full">
-                        Selesai
+                        {t('done') || "Selesai"}
                       </span>
                     ) : (
                       <span className="text-xs font-bold text-amber-500 bg-amber-100 dark:bg-amber-900/30 px-2 py-1 rounded-full cursor-pointer hover:bg-amber-200" onClick={() => handleClaimMission(mission.id, mission.xp)}>
@@ -187,7 +202,7 @@ export default function DesktopGamification() {
         <div className="space-y-6">
           <AnimatedContent distance={40} delay={0.4} direction="vertical">
             <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
-              <HeartPulse className={`w-5 h-5 ${themeColor}`} /> Kesehatan Finansial
+              <HeartPulse className={`w-5 h-5 ${themeColor}`} /> {t('fin_health') || "Kesehatan Finansial"}
             </h2>
             
             <Card className="bg-card border-border shadow-sm">
@@ -210,14 +225,14 @@ export default function DesktopGamification() {
                     </svg>
                     <div className="absolute inset-0 flex flex-col items-center justify-center">
                       <span className="text-3xl font-black text-emerald-500">85</span>
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">Skor</span>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase">{t('score_label') || "Skor"}</span>
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400">Sangat Sehat</h3>
+                    <h3 className="text-lg font-bold text-emerald-600 dark:text-emerald-400">{t('very_healthy') || "Sangat Sehat"}</h3>
                     <p className="text-sm text-muted-foreground mt-1 max-w-sm mx-auto">
-                      Pengeluaran terkendali. Lanjutkan kebiasaan ini.
+                      {t('spending_controlled') || "Pengeluaran terkendali. Lanjutkan kebiasaan ini."}
                     </p>
                   </div>
                   
@@ -232,21 +247,21 @@ export default function DesktopGamification() {
       {/* KOLOM BAWAH: ACHIEVEMENTS */}
       <AnimatedContent distance={40} delay={0.6} direction="vertical">
         <h2 className="text-lg font-bold flex items-center gap-2 mb-4 mt-8">
-          <Medal className={`w-5 h-5 ${themeColor}`} /> Badges & Pencapaian
+          <Medal className={`w-5 h-5 ${themeColor}`} /> {t('badges') || "Badges & Pencapaian"}
         </h2>
         
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[
-            { title: "Starter", desc: "Capai Transaksi 50", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "Selesai" },
-            { title: "Active User", desc: "Capai Transaksi 100", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "Selesai" },
-            { title: "Loyal User", desc: "Capai Transaksi 150", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "148/150 - Klik untuk Klaim" },
-            { title: "Super User", desc: "Capai Transaksi 200", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "148/200" },
-            { title: "Sehat Finansial", desc: "Skor Finansial 80", icon: <HeartPulse className="w-6 h-6" />, color: "bg-emerald-500", progress: "Selesai" },
-            { title: "Konsisten Sehat", desc: "Tahan 80 > 1 Minggu", icon: <HeartPulse className="w-6 h-6" />, color: "bg-emerald-500", progress: "4 Hari - Klik untuk Klaim" },
-            { title: "Paham Finansial", desc: "Level Finansial 2", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "Selesai" },
-            { title: "Bisa Finansial", desc: "Level Finansial 3", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "Selesai" },
-            { title: "Master Finansial", desc: "Level Finansial 4", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "Selesai" },
-            { title: "Pakar Finansial", desc: "Level Finansial 5", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "Level 4 - Klik untuk Klaim" },
+            { title: "Starter", descKey: "badge_starter_desc", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "100%", defaultDesc: "Capai Transaksi 50" },
+            { title: "Active User", descKey: "badge_active_desc", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "100%", defaultDesc: "Capai Transaksi 100" },
+            { title: "Loyal User", descKey: "badge_loyal_desc", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "148/150", defaultDesc: "Capai Transaksi 150" },
+            { title: "Super User", descKey: "badge_super_desc", icon: <CheckCircle className="w-6 h-6" />, color: "bg-blue-500", progress: "148/200", defaultDesc: "Capai Transaksi 200" },
+            { title: "Sehat Finansial", descKey: "badge_healthy_desc", icon: <HeartPulse className="w-6 h-6" />, color: "bg-emerald-500", progress: "100%", defaultDesc: "Skor Finansial 80" },
+            { title: "Konsisten Sehat", descKey: "badge_consistent_desc", icon: <HeartPulse className="w-6 h-6" />, color: "bg-emerald-500", progress: "4/7", defaultDesc: "Tahan 80 > 1 Minggu" },
+            { title: "Paham Finansial", descKey: "badge_paham_desc", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "100%", defaultDesc: "Level Finansial 2" },
+            { title: "Bisa Finansial", descKey: "badge_bisa_desc", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "100%", defaultDesc: "Level Finansial 3" },
+            { title: "Master Finansial", descKey: "badge_master_desc", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "100%", defaultDesc: "Level Finansial 4" },
+            { title: "Pakar Finansial", descKey: "badge_pakar_desc", icon: <Trophy className="w-6 h-6" />, color: "bg-amber-500", progress: "Lvl 4", defaultDesc: "Level Finansial 5" },
           ].map((badge, idx) => {
             const isActive = unlockedAchievements.includes(badge.title);
             const displayColor = isActive ? badge.color : "bg-slate-200 dark:bg-slate-800";
@@ -260,10 +275,10 @@ export default function DesktopGamification() {
                   </div>
                   <div>
                     <h4 className="text-sm font-bold text-foreground leading-tight">{badge.title}</h4>
-                    <p className="text-[10px] text-muted-foreground mt-1">{badge.desc}</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">{t(badge.descKey) || badge.defaultDesc}</p>
                   </div>
                   <div className={`w-full py-1 rounded-md mt-1 transition-colors ${isActive ? 'bg-emerald-100/50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400' : 'bg-muted text-muted-foreground'}`}>
-                    <span className="text-[10px] font-bold">{isActive ? 'Selesai' : badge.progress}</span>
+                    <span className="text-[10px] font-bold">{isActive ? (t('done') || 'Selesai') : badge.progress}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -292,7 +307,7 @@ export default function DesktopGamification() {
               onClick={() => setCelebration(prev => ({...prev, show: false}))}
               className="mt-8 px-8 py-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-foreground font-bold rounded-xl transition-colors active:scale-95"
             >
-              Lanjutkan
+              {t('continue') || "Lanjutkan"}
             </button>
           </div>
         </div>, document.body
