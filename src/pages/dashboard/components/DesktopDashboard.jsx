@@ -1,7 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowUpRight, ArrowDownRight, Scan, Plus, Search, Bell, Settings, TrendingUp, Wallet, ChevronRight } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip, PieChart, Pie, Cell, LineChart, Line } from "recharts";
+import SparklineChart from "@/components/charts/SparklineChart";
+import CashFlowAreaChart from "@/components/charts/CashFlowAreaChart";
+import CategoryPieChart from "@/components/charts/CategoryPieChart";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { mainChartData, sparklineBalance, sparklineIncome, sparklineExpense, categoryData, recentActivity } from "../data/mockData";
@@ -49,7 +51,7 @@ export default function DesktopDashboard() {
       <AnimatedContent distance={30} delay={0.1} direction="vertical">
         <header className="flex justify-between items-center mb-8 gap-4 px-2">
           <div>
-            <h1 className="text-2xl font-bold text-foreground tracking-tight">Halo, Devoryn 👋</h1>
+            <h1 className="text-2xl font-bold text-foreground tracking-tight">Halo, Lelouch 👋</h1>
             <p className="text-sm text-muted-foreground mt-1">Sabtu, 26 Okt 2024 | 10:30 AM</p>
           </div>
           <div className="flex items-center gap-4">
@@ -64,9 +66,9 @@ export default function DesktopDashboard() {
             {/* User Profile */}
             <div className="flex items-center gap-2 bg-card border border-border shadow-sm rounded-full py-1.5 px-3 cursor-pointer hover:bg-accent transition-colors">
               <div className="w-7 h-7 bg-primary rounded-full flex items-center justify-center text-xs text-primary-foreground font-bold shadow-inner">
-                D
+                L
               </div>
-              <span className="text-sm font-bold">Devoryn</span>
+              <span className="text-sm font-bold">Lelouch</span>
               <ChevronRight className="w-4 h-4 text-muted-foreground rotate-90" />
             </div>
           </div>
@@ -98,11 +100,7 @@ export default function DesktopDashboard() {
                       </div>
                     </div>
                     <div className="w-24 h-12 ml-2">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={sparklineBalance}>
-                          <Line type="monotone" dataKey="v" stroke="var(--primary)" strokeWidth={2.5} dot={false} isAnimationActive={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
+                      <SparklineChart data={sparklineBalance} color="var(--primary)" />
                     </div>
                   </div>
                 </CardContent>
@@ -125,11 +123,7 @@ export default function DesktopDashboard() {
                       </div>
                     </div>
                     <div className="w-24 h-12 ml-2">
-                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={sparklineIncome}>
-                          <Line type="monotone" dataKey="v" stroke="#10b981" strokeWidth={2.5} dot={false} isAnimationActive={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
+                       <SparklineChart data={sparklineIncome} color="#10b981" />
                     </div>
                   </div>
                 </CardContent>
@@ -152,11 +146,7 @@ export default function DesktopDashboard() {
                       </div>
                     </div>
                     <div className="w-24 h-12 ml-2">
-                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={sparklineExpense}>
-                          <Line type="monotone" dataKey="v" stroke="#f43f5e" strokeWidth={2.5} dot={false} isAnimationActive={false} />
-                        </LineChart>
-                      </ResponsiveContainer>
+                       <SparklineChart data={sparklineExpense} color="#f43f5e" />
                     </div>
                   </div>
                 </CardContent>
@@ -178,28 +168,7 @@ export default function DesktopDashboard() {
                     </div>
                   </div>
                   <div className="w-full flex-1 min-h-[220px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={mainChartData} margin={{ top: 10, right: 20, left: 10, bottom: 0 }}>
-                        <defs>
-                          <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#10b981" stopOpacity={0.2}/>
-                            <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                          </linearGradient>
-                          <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.2}/>
-                            <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
-                          </linearGradient>
-                        </defs>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--border)" opacity={0.6} />
-                        <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{fill: 'currentColor', fontSize: 11}} className="text-muted-foreground" dy={10} />
-                        <YAxis axisLine={false} tickLine={false} tick={{fill: 'currentColor', fontSize: 11}} className="text-muted-foreground" dx={-5} tickFormatter={(val) => `Rp${val/1000}k`} />
-                        <Tooltip 
-                          contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: '8px', fontSize: '12px' }}
-                        />
-                        <Area type="monotone" dataKey="income" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#colorIncome)" />
-                        <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#colorExpense)" />
-                      </AreaChart>
-                    </ResponsiveContainer>
+                      <CashFlowAreaChart data={mainChartData} />
                   </div>
                 </CardContent>
               </Card>
@@ -210,29 +179,7 @@ export default function DesktopDashboard() {
                 <CardContent className="p-6 flex flex-col flex-1">
                   <h3 className="text-sm font-bold text-foreground mb-6 shrink-0">Distribusi Kategori</h3>
                   <div className="w-full relative flex-1 min-h-[160px]">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={categoryData}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={65}
-                          outerRadius={85}
-                          paddingAngle={5}
-                          dataKey="value"
-                          stroke="none"
-                        >
-                          {categoryData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: '8px', fontSize: '12px' }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                      <Scan className="w-5 h-5 text-muted-foreground mb-1" />
-                      <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Kategori</span>
-                    </div>
+                      <CategoryPieChart data={categoryData} />
                   </div>
                   <div className="mt-auto flex flex-col justify-end gap-2.5 shrink-0">
                     {categoryData.map((cat, i) => (

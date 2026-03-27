@@ -11,6 +11,7 @@ export default function AddTransaction() {
 
   // State Formulir
   const [type, setType] = useState("expense"); 
+  const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [category, setCategory] = useState("");
   const [date, setDate] = useState(() => new Date().toISOString().split('T')[0]);
@@ -35,6 +36,7 @@ export default function AddTransaction() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!name.trim()) return toast.error("Nama transaksi belum diisi!");
     if (!amount || amount <= 0) return toast.error("Nominal tidak boleh kosong!");
     if (!category.trim()) return toast.error("Kategori belum diisi!");
 
@@ -42,6 +44,7 @@ export default function AddTransaction() {
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500)); 
       toast.success(`Berhasil mencatat ${type === 'income' ? 'Pemasukan' : 'Pengeluaran'}!`);
+      setName("");
       setAmount("");
       setCategory("");
       setNotes("");
@@ -117,6 +120,18 @@ export default function AddTransaction() {
                 onChange={(e) => setDate(e.target.value)}
                 disabled={isSubmitting}
                 className="bg-background h-12 rounded-xl border-border" 
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">Nama Transaksi</label>
+              <Input 
+                type="text"
+                placeholder="Contoh: Beli Token Listrik, Gaji Bulanan..."
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={isSubmitting}
+                className="bg-background h-12 rounded-xl border-border px-3" 
               />
             </div>
 

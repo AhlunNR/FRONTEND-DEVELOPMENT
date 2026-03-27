@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
+import DistributionPieChart from "@/components/charts/DistributionPieChart";
+import TrendBarChart from "@/components/charts/TrendBarChart";
 import { useMode } from "@/contexts/ModeContext";
 import { Lightbulb, TrendingDown, AlertCircle, FileText, Download, Target, Receipt, Plus, X, Trophy, Sparkles } from "lucide-react";
 import { umkmData, personalData, trendData, budgetData, topExpenses, formatIDR } from '../data/mockData';
@@ -95,28 +97,7 @@ export default function DesktopInsights() {
               </CardHeader>
               <CardContent className="p-0 flex flex-col items-center flex-1 justify-center">
                 <div className="h-[220px] w-full mt-4">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <PieChart>
-                      <Pie
-                        data={activeData}
-                        cx="50%"
-                        cy="50%"
-                        innerRadius={70}
-                        outerRadius={90}
-                        paddingAngle={5}
-                        dataKey="value"
-                        stroke="none"
-                      >
-                        {activeData.map((entry, index) => (
-                           <Cell key={`cell-${index}`} fill={entry.color} />
-                        ))}
-                      </Pie>
-                      <RechartsTooltip 
-                        formatter={(value) => formatIDR(value)}
-                        contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: '8px', fontSize: '13px' }}
-                      />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <DistributionPieChart data={activeData} />
                 </div>
                 <div className="w-full px-6 pb-6 space-y-3 mt-4">
                   {activeData.map((item, index) => (
@@ -187,16 +168,7 @@ export default function DesktopInsights() {
                 </CardHeader>
                 <CardContent className="p-5 flex-1 flex flex-col justify-center">
                   <div className="h-[220px] w-full">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={trendData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="opacity-10" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: 'currentColor', fontSize: 12}} className="opacity-50" dy={10} />
-                        <YAxis axisLine={false} tickLine={false} tick={{fill: 'currentColor', fontSize: 12}} className="opacity-50" dx={0} tickFormatter={(val) => `${val/1000000}M`} />
-                        <RechartsTooltip cursor={{fill: 'currentColor', opacity: 0.1}} contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: '8px', fontSize: '13px' }} />
-                        <Bar dataKey="lastMonth" fill="#cbd5e1" radius={[4, 4, 0, 0]} name="Bulan Lalu" className="opacity-40" />
-                        <Bar dataKey="thisMonth" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Bulan Ini" />
-                      </BarChart>
-                    </ResponsiveContainer>
+                      <TrendBarChart data={trendData} />
                   </div>
                 </CardContent>
               </Card>
@@ -353,8 +325,8 @@ export default function DesktopInsights() {
       </div>
 
       {/* Modal / Dialog Tambah Anggaran */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+      {isModalOpen && createPortal(
+        <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
           <Card className="w-full max-w-md bg-card border-border shadow-2xl animate-in zoom-in-95 duration-200">
             <CardHeader className="pb-4 border-b border-border flex flex-row items-center justify-between">
               <div>
@@ -429,7 +401,7 @@ export default function DesktopInsights() {
               </form>
             </CardContent>
           </Card>
-        </div>
+        </div>, document.body
       )}
 
     </div>

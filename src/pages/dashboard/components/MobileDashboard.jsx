@@ -8,7 +8,7 @@ import {
   Calendar, 
   ChevronRight 
 } from "lucide-react";
-import { Area, AreaChart, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import CashFlowAreaChart from "@/components/charts/CashFlowAreaChart";
 import { Link } from "react-router-dom";
 import { useMode } from "@/contexts/ModeContext";
 import { mainChartData, recentActivity } from "../data/mockData";
@@ -99,28 +99,7 @@ export default function MobileDashboard() {
           <Card className="bg-card border-border shadow-sm rounded-xl overflow-hidden">
             <CardContent className="p-0 pt-4 pb-0 px-0">
               <div className="h-[200px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={chartData} margin={{ top: 10, right: 15, left: -5, bottom: 15 }}>
-                    <defs>
-                      <linearGradient id="fillIncomeMobile" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="fillExpenseMobile" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#f43f5e" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="currentColor" className="opacity-10" />
-                    <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill: 'currentColor', fontSize: 10}} className="opacity-50" dy={10} />
-                    <YAxis axisLine={false} tickLine={false} tick={{fill: 'currentColor', fontSize: 10}} className="opacity-50" dx={0} tickFormatter={(val) => `${val/1000000}M`} />
-                    <Tooltip 
-                      contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', color: 'var(--foreground)', borderRadius: '8px', fontSize: '12px' }}
-                    />
-                    <Area type="monotone" dataKey="income" stroke="#10b981" strokeWidth={3} fillOpacity={1} fill="url(#fillIncomeMobile)" />
-                    <Area type="monotone" dataKey="expense" stroke="#f43f5e" strokeWidth={3} fillOpacity={1} fill="url(#fillExpenseMobile)" />
-                  </AreaChart>
-                </ResponsiveContainer>
+                <CashFlowAreaChart data={chartData} isMobile={true} />
               </div>
             </CardContent>
           </Card>

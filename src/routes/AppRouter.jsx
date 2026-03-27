@@ -7,6 +7,7 @@ import Dashboard from '../pages/dashboard';
 import Transactions from '../pages/transactions';
 import Insights from '../pages/insights';
 import Profile from '../pages/profile';
+import Gamification from '../pages/gamification';
 
 export default function AppRouter() {
   return (
@@ -22,6 +23,7 @@ export default function AppRouter() {
           <Route path="/transactions" element={<Transactions />} />
           <Route path="/add" element={<AddTransaction />} />
           <Route path="/insights" element={<Insights />} />
+          <Route path="/gamification" element={<Gamification />} />
           <Route path="/profile" element={<Profile />} />
         </Route>
 
