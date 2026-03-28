@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LogIn, Eye, EyeOff, User, Lock, AlertCircle } from 'lucide-react';
+import { authService } from '../../services/auth.service';
 
 const LoginGlassCard = () => {
   const navigate = useNavigate();
@@ -30,13 +31,13 @@ const LoginGlassCard = () => {
       return;
     }
 
-    // Arahkan otomatis ke dashboard
-    navigate('/dashboard');
+    // Since backend uses Google OAuth solely right now
+    setError('Fitur login email sedang maintenance. Gunakan Google Login.');
   };
 
   const handleGoogleLogin = (e) => {
     e.preventDefault();
-    navigate('/dashboard');
+    authService.loginWithGoogle();
   };
 
   return (

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Landing from '../pages/Landing';
 import Login from '../pages/Login';
+import OAuthCallback from '../pages/auth/OAuthCallback';
 import AppLayout from '../layouts/AppLayout';
 import AddTransaction from '../pages/add-transaction';
 import Dashboard from '../pages/dashboard';
@@ -16,6 +17,7 @@ export default function AppRouter() {
         {/* Rute publik */}
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/auth/callback" element={<OAuthCallback />} />
 
         {/* Rute internal aplikasi */}
         <Route element={<AppLayout />}>

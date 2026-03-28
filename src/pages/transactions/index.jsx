@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import DesktopTransactions from "./components/DesktopTransactions";
 import MobileTransactions from "./components/MobileTransactions";
-import { dummyTransactions } from "@/lib/mockData";
+import { transactionService } from "@/services/transaction.service";
 
 export default function Transactions() {
   const [isDesktop, setIsDesktop] = useState(window.innerWidth >= 768);
@@ -12,8 +12,34 @@ export default function Transactions() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+  const [transactions, setTransactions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filteredTransactions = dummyTransactions.filter((trx) => {
+  useEffect(() => {
+    const fetchTransactions = async () => {
+      try {
+        setLoading(true);
+        const data = await transactionService.getTransactions({ limit: 100 });
+        const mappedData = data.map(t => ({
+          id: t.id,
+          type: t.type,
+          name: t.description,
+          amount: t.amount,
+          category: t.category_name || 'Lain-lain',
+          notes: t.note || '',
+          date: t.date 
+        }));
+        setTransactions(mappedData);
+      } catch (err) {
+        console.error("Failed to load transactions", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTransactions();
+  }, []);
+
+  const filteredTransactions = transactions.filter((trx) => {
     const searchLower = searchQuery.toLowerCase();
     return (
       (trx.name && trx.name.toLowerCase().includes(searchLower)) ||
@@ -21,6 +47,14 @@ export default function Transactions() {
       (trx.notes && trx.notes.toLowerCase().includes(searchLower))
     );
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return isDesktop ? (
     <DesktopTransactions

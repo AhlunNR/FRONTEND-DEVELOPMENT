@@ -5,21 +5,38 @@ import DistributionPieChart from "@/components/charts/DistributionPieChart";
 import TrendBarChart from "@/components/charts/TrendBarChart";
 import { useMode } from "@/contexts/ModeContext";
 import { Lightbulb, TrendingDown, AlertCircle, FileText, Download, Target, Receipt, Plus, X, Trophy, Sparkles } from "lucide-react";
-import { umkmData, personalData, trendData, budgetData, topExpenses, formatIDR } from '../data/mockData';
+import { budgetData } from '../data/mockData';
+import { formatIDR } from '@/utils/currency';
+import { useDashboardData } from "../../dashboard/hooks/useDashboardData";
+import { reportService } from "@/services/report.service";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 
 export default function DesktopInsights() {
   const { mode } = useMode(); 
+  const { summary, chartData, categoryData, recentActivity, loading } = useDashboardData();
   
   const isPersonal = mode === 'personal';
-  const activeData = isPersonal ? personalData : umkmData;
   const themeColor = isPersonal ? 'text-purple-600' : 'text-blue-600';
-  // Modifikasi sedikit themeBg agar tidak terlalu terang saat dark mode
   const themeBg = isPersonal ? 'bg-purple-100 dark:bg-purple-900/20' : 'bg-blue-100 dark:bg-blue-900/20';
 
-  const totalExpense = activeData.reduce((acc, curr) => acc + curr.value, 0);
+  const activeData = categoryData.length > 0 ? categoryData : [{ name: 'Belum ada data', value: 100, color: '#cbd5e1' }];
+  const totalExpense = summary.total_expense || 0;
+
+  // Map Trend Data (Comparing Expense month over month)
+  const trendData = chartData.map((curr, idx, arr) => {
+    const prev = idx > 0 ? arr[idx - 1] : { expense: 0 };
+    return {
+      name: curr.month,
+      lastMonth: Number(prev.expense),
+      thisMonth: Number(curr.expense)
+    };
+  });
+  
+  // Ambil transaksi expense saja untuk top expenses
+  const topExpenses = recentActivity.filter(t => t.type === 'expense').slice(0, 5);
 
   // States for Budgets
   const [budgets, setBudgets] = useState(budgetData);
@@ -49,6 +66,24 @@ export default function DesktopInsights() {
     setNewBudgetLimit('');
   };
 
+  const handleExportPDF = async () => {
+    try {
+      toast.loading("Membuat laporan PDF...", { id: "export_pdf" });
+      await reportService.downloadPDF();
+      toast.success("Laporan PDF berhasil diunduh!", { id: "export_pdf" });
+    } catch (err) {
+      toast.error(err.toString(), { id: "export_pdf" });
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-7xl mx-auto px-8 py-10 space-y-8 animate-in fade-in zoom-in-95 duration-500 relative bg-background text-foreground transition-colors" id="snap-main-container">
       {/* Header Halaman */}
@@ -59,7 +94,7 @@ export default function DesktopInsights() {
             <p className="text-sm text-muted-foreground mt-1">Analisis mendalam seputar arus kasmu.</p>
           </div>
           {!isPersonal && (
-            <button className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white text-sm font-bold py-2.5 px-5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 border-none">
+            <button onClick={handleExportPDF} className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white text-sm font-bold py-2.5 px-5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 border-none cursor-pointer">
               <Download className="w-4 h-4" /> Export Laporan (PDF)
             </button>
           )}
@@ -93,7 +128,7 @@ export default function DesktopInsights() {
             <Card className="bg-card border-border shadow-sm overflow-hidden flex flex-col h-full w-full">
               <CardHeader className="pb-0 shrink-0">
                 <CardTitle className="text-base">Distribusi Kategori</CardTitle>
-                <CardDescription className="text-sm">Berdasarkan pengeluaran Rp{totalExpense/1000000} Juta</CardDescription>
+                <CardDescription className="text-sm">Berdasarkan total Rp{(totalExpense/1000000).toFixed(1)} Juta</CardDescription>
               </CardHeader>
               <CardContent className="p-0 flex flex-col items-center flex-1 justify-center">
                 <div className="h-[220px] w-full mt-4">
@@ -107,9 +142,9 @@ export default function DesktopInsights() {
                         <span className="text-sm font-medium text-muted-foreground">{item.name}</span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-sm font-bold">{formatIDR(item.value)}</span>
-                        <span className="text-xs text-muted-foreground font-bold w-8 text-right">
-                          {Math.round((item.value / totalExpense) * 100)}%
+                        <span className="text-sm font-bold">{item.value}%</span>
+                        <span className="text-xs text-muted-foreground font-bold w-12 text-right">
+                          {item.value}%
                         </span>
                       </div>
                     </div>
@@ -192,17 +227,17 @@ export default function DesktopInsights() {
                     <div className="grid grid-cols-2 gap-4 border-b border-slate-700/50 pb-5">
                       <div>
                         <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-bold">Pendapatan Kotor</p>
-                        <p className="text-lg font-black text-emerald-400">{formatIDR(15500000)}</p>
+                        <p className="text-lg font-black text-emerald-400">{formatIDR(summary.total_income)}</p>
                       </div>
                       <div>
                         <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-bold">Total Biaya</p>
-                        <p className="text-lg font-black text-rose-400">{formatIDR(8200000)}</p>
+                        <p className="text-lg font-black text-rose-400">{formatIDR(summary.total_expense)}</p>
                       </div>
                     </div>
                     <div>
                       <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-bold">Laba Bersih (Net Profit)</p>
-                      <p className="text-4xl font-black text-white">{formatIDR(7300000)}</p>
-                      <div className="inline-block bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full mt-4">Margin Laba: 47%</div>
+                      <p className="text-4xl font-black text-white">{formatIDR(summary.profit_loss)}</p>
+                      <div className="inline-block bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full mt-4">Statistik Real-Time</div>
                     </div>
                   </CardContent>
                 </Card>
@@ -266,11 +301,11 @@ export default function DesktopInsights() {
                       <div className="flex items-center gap-4">
                         <div className="w-8 h-8 rounded-full bg-card border border-border text-muted-foreground flex items-center justify-center text-sm font-bold shrink-0 shadow-sm">{idx + 1}</div>
                         <div>
-                          <p className="text-sm font-bold line-clamp-1">{trx.name}</p>
+                          <p className="text-sm font-bold line-clamp-1">{trx.action}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">{trx.date}</p>
                         </div>
                       </div>
-                      <p className="text-sm font-bold text-rose-600 shrink-0">-{formatIDR(trx.amount)}</p>
+                      <p className="text-sm font-bold text-rose-600 shrink-0">-{trx.amount}</p>
                     </div>
                   ))}
                 </CardContent>

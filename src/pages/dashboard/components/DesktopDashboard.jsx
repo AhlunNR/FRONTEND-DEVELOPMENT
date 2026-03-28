@@ -6,7 +6,9 @@ import CashFlowAreaChart from "@/components/charts/CashFlowAreaChart";
 import CategoryPieChart from "@/components/charts/CategoryPieChart";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import { mainChartData, sparklineBalance, sparklineIncome, sparklineExpense, categoryData, recentActivity } from "../data/mockData";
+import { useDashboardData } from "../hooks/useDashboardData";
+import { formatIDR } from "@/utils/currency";
+import { transactionService } from "@/services/transaction.service";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 
 export default function DesktopDashboard() {
@@ -14,35 +16,40 @@ export default function DesktopDashboard() {
   const fileInputRef = useRef(null);
   const [isScanning, setIsScanning] = useState(false);
 
+  const { summary, chartData, sparklineBalance, sparklineIncome, sparklineExpense, categoryData, recentActivity, loading } = useDashboardData();
+  
   // --- FUNGSI OCR SCAN (PENYAMBUNG KE BACKEND) ---
   const handleScanClick = () => fileInputRef.current.click();
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    const formData = new FormData();
-    formData.append("receipt", file);
-
     setIsScanning(true);
     try {
-      const res = await axios.post("http://localhost:3000/api/v1/ocr/scan", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      const result = res.data.data;
+      const result = await transactionService.scanReceipt(file);
       navigate("/add", { 
         state: { 
-          amount: result.amount || result.total_amount, 
-          description: result.description || result.merchant_name,
+          amount: result.suggested_total || result.amount, 
+          description: result.extracted_text || result.description,
           type: "expense" 
         } 
       });
     } catch (err) {
       console.error("OCR Error:", err);
-      alert("Gagal scan struk!");
+      alert("Gagal scan struk: " + err);
     } finally {
       setIsScanning(false);
     }
   };
+
+  // Tampilkan loading skeleton jika data belum siap
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-full bg-background text-foreground p-8 font-sans w-full animate-in fade-in duration-300 transition-colors" id="snap-main-container">
@@ -93,10 +100,10 @@ export default function DesktopDashboard() {
                   </div>
                   <div className="flex items-end justify-between">
                     <div>
-                      <h2 className="text-2xl font-black mb-2">Rp 12.450.000</h2>
+                      <h2 className="text-2xl font-black mb-2">{formatIDR(summary.balance)}</h2>
                       <div className="flex items-center gap-1.5 text-[11px] font-bold bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-full w-max mt-1">
                         <ArrowUpRight className="w-3 h-3" />
-                        <span>+8.5% bulan ini</span>
+                        <span>Real-time data</span>
                       </div>
                     </div>
                     <div className="w-24 h-12 ml-2">
@@ -116,10 +123,10 @@ export default function DesktopDashboard() {
                   </div>
                   <div className="flex items-end justify-between">
                     <div>
-                      <h2 className="text-2xl font-black mb-2">Rp 5.200.000</h2>
+                      <h2 className="text-2xl font-black mb-2">{formatIDR(summary.total_income)}</h2>
                       <div className="flex items-center gap-1.5 text-[11px] font-bold bg-emerald-500/10 text-emerald-500 px-2 py-1 rounded-full w-max mt-1">
                         <ArrowUpRight className="w-3 h-3" />
-                        <span>+12.0% bulan ini</span>
+                        <span>Real-time data</span>
                       </div>
                     </div>
                     <div className="w-24 h-12 ml-2">
@@ -139,10 +146,10 @@ export default function DesktopDashboard() {
                   </div>
                   <div className="flex items-end justify-between">
                     <div>
-                      <h2 className="text-2xl font-black mb-2">Rp 2.250.000</h2>
+                      <h2 className="text-2xl font-black mb-2">{formatIDR(summary.total_expense)}</h2>
                       <div className="flex items-center gap-1.5 text-[11px] font-bold bg-rose-500/10 text-rose-500 px-2 py-1 rounded-full w-max mt-1">
                         <ArrowDownRight className="w-3 h-3" />
-                        <span>-5.2% bulan ini</span>
+                        <span>Real-time data</span>
                       </div>
                     </div>
                     <div className="w-24 h-12 ml-2">
@@ -168,7 +175,7 @@ export default function DesktopDashboard() {
                     </div>
                   </div>
                   <div className="w-full flex-1 min-h-[220px]">
-                      <CashFlowAreaChart data={mainChartData} />
+                      <CashFlowAreaChart data={chartData} />
                   </div>
                 </CardContent>
               </Card>

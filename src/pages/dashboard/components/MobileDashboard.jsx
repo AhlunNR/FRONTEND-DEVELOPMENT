@@ -11,7 +11,7 @@ import {
 import CashFlowAreaChart from "@/components/charts/CashFlowAreaChart";
 import { Link } from "react-router-dom";
 import { useMode } from "@/contexts/ModeContext";
-import { mainChartData, recentActivity } from "../data/mockData";
+import { useDashboardData } from "../hooks/useDashboardData";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 
 const formatIDR = (amount) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount);
@@ -19,8 +19,18 @@ const formatDate = (dateString) => new Date(dateString).toLocaleDateString('id-I
 
 export default function MobileDashboard() {
   const { mode } = useMode();
+  const { summary, chartData, recentActivity, loading } = useDashboardData();
+  
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-background">
+        <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   // Gunakan 7 data pertama biar gak penuh di layar HP
-  const chartData = mainChartData.slice(0, 7);
+  const mobileChartData = chartData.slice(0, 7);
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4 max-w-xl mx-auto w-full space-y-5 animate-in fade-in zoom-in-95 duration-300 pb-32 transition-colors" id="snap-main-container">
@@ -43,21 +53,21 @@ export default function MobileDashboard() {
               <Wallet className="w-4 h-4" />
               <span className="text-xs font-medium uppercase tracking-wider">Total Saldo Aktif</span>
             </div>
-            <div className="text-3xl font-extrabold tracking-tight mb-5">Rp 12.450.000</div>
+            <div className="text-3xl font-extrabold tracking-tight mb-5">{formatIDR(summary.balance)}</div>
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
               <div>
                 <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 mb-1">
                   <div className="bg-emerald-500/20 p-1 rounded-full"><ArrowUpRight className="w-3 h-3 text-emerald-400" /></div>
                   PEMASUKAN
                 </div>
-                <div className="text-sm font-bold text-slate-100">Rp 5.200.000</div>
+                <div className="text-sm font-bold text-slate-100">{formatIDR(summary.total_income)}</div>
               </div>
               <div>
                 <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 mb-1">
                   <div className="bg-rose-500/20 p-1 rounded-full"><ArrowDownRight className="w-3 h-3 text-rose-400" /></div>
                   PENGELUARAN
                 </div>
-                <div className="text-sm font-bold text-slate-100">Rp 2.250.000</div>
+                <div className="text-sm font-bold text-slate-100">{formatIDR(summary.total_expense)}</div>
               </div>
             </div>
           </CardContent>
@@ -99,7 +109,7 @@ export default function MobileDashboard() {
           <Card className="bg-card border-border shadow-sm rounded-xl overflow-hidden">
             <CardContent className="p-0 pt-4 pb-0 px-0">
               <div className="h-[200px] w-full">
-                <CashFlowAreaChart data={chartData} isMobile={true} />
+                <CashFlowAreaChart data={mobileChartData} isMobile={true} />
               </div>
             </CardContent>
           </Card>
@@ -127,7 +137,7 @@ export default function MobileDashboard() {
                     <div>
                       <p className="text-xs font-bold">{trx.action}</p>
                       <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
-                        <Calendar className="w-3 h-3" /> {formatDate(trx.dateISO)}
+                        <Calendar className="w-3 h-3" /> {trx.date}
                       </div>
                     </div>
                   </div>

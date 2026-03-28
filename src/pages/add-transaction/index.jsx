@@ -4,10 +4,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import { transactionService } from "@/services/transaction.service";
 
 export default function AddTransaction() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   // State Formulir
   const [type, setType] = useState("expense"); 
@@ -42,15 +44,22 @@ export default function AddTransaction() {
 
     setIsSubmitting(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1500)); 
+      // Create payload to backend
+      const payload = {
+        type,
+        amount: Number(amount),
+        description: name,
+        note: notes,
+        date,
+        // Optional: category_id if backend requires UUID, but backend currently accepts it or looks it up
+      };
+      await transactionService.createTransaction(payload);
       toast.success(`Berhasil mencatat ${type === 'income' ? 'Pemasukan' : 'Pengeluaran'}!`);
-      setName("");
-      setAmount("");
-      setCategory("");
-      setNotes("");
-      setDate(new Date().toISOString().split('T')[0]);
+      
+      // Navigate back to dashboard or transactions
+      navigate('/dashboard');
     } catch (error) {
-      toast.error("Gagal menyimpan transaksi.");
+      toast.error(error.toString() || "Gagal menyimpan transaksi.");
     } finally {
       setIsSubmitting(false);
     }
