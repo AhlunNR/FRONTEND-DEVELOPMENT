@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, NavLink } from "react-router-dom";
 
 import {
   User,
@@ -17,7 +17,8 @@ import {
   Trophy,
   Flame,
   Medal,
-  WalletCards
+  WalletCards,
+  Languages // Tambah icon bahasa biar keren
 } from "lucide-react";
 import { useMode } from "@/contexts/ModeContext";
 
@@ -28,7 +29,8 @@ export default function MobileProfile() {
     notifications,
     toggleMode,
     toggleTheme,
-    toggleNotifications
+    toggleNotifications,
+    t // Panggil fungsi t()
   } = useMode();
   const navigate = useNavigate();
 
@@ -50,7 +52,7 @@ export default function MobileProfile() {
       {/* HEADER */}
       <header>
         <h1 className="text-xl font-bold tracking-tight text-foreground">
-          Profil & Pengaturan
+          {t('profile')}
         </h1>
       </header>
 
@@ -71,7 +73,7 @@ export default function MobileProfile() {
             </p>
 
             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider ${themeBg} ${themeColor}`}>
-              {isPersonal ? "Personal" : "UMKM"}
+              {isPersonal ? t('mode_p_short') : t('mode_u_short')}
             </span>
           </div>
 
@@ -89,7 +91,7 @@ export default function MobileProfile() {
               <WalletCards className="w-4 h-4" />
             </div>
             <p className="text-lg font-black text-foreground">124</p>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Transaksi</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">{t('transactions')}</p>
           </div>
         </Card>
         <Card className="border-border bg-card shadow-sm overflow-hidden text-center py-3">
@@ -98,7 +100,7 @@ export default function MobileProfile() {
               <Medal className="w-4 h-4" />
             </div>
             <p className="text-lg font-black text-foreground">12</p>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Badges</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">{t('badges')}</p>
           </div>
         </Card>
         <Card className="border-border bg-card shadow-sm overflow-hidden text-center py-3">
@@ -107,7 +109,7 @@ export default function MobileProfile() {
               <Flame className="w-4 h-4" />
             </div>
             <p className="text-lg font-black text-foreground">5</p>
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">Day Streak</p>
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wide">{t('streak')}</p>
           </div>
         </Card>
       </div>
@@ -118,7 +120,7 @@ export default function MobileProfile() {
         {/* PREFERENSI */}
         <div>
           <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-            Preferensi Aplikasi
+            {t('general')}
           </h3>
 
           <Card className="border-border bg-card shadow-sm overflow-hidden">
@@ -140,16 +142,37 @@ export default function MobileProfile() {
 
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">
-                      Mode Aplikasi
+                      {t('app_mode')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {isPersonal ? "Personal" : "UMKM"}
+                      {isPersonal ? t('mode_p') : t('mode_u')}
                     </p>
                   </div>
                 </div>
 
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
               </button>
+
+              {/* LANGUAGE SETTINGS (TAMBAHAN BIAR BISA GANTI BAHASA DI MOBILE) */}
+              <NavLink 
+                to="/profile/language"
+                className="flex items-center justify-between p-4 hover:bg-accent transition text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-muted text-foreground">
+                    <Languages className="w-4 h-4" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-sm font-bold text-foreground">
+                      {t('lang_name')}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      {t('select_lang')}
+                    </p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </NavLink>
 
               {/* THEME */}
               <button
@@ -167,10 +190,10 @@ export default function MobileProfile() {
 
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">
-                      Tema Aplikasi
+                      {t('theme_title')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {isDark ? "Dark Mode" : "Light Mode"}
+                      {isDark ? t('theme_d') : t('theme_l')}
                     </p>
                   </div>
                 </div>
@@ -192,10 +215,10 @@ export default function MobileProfile() {
 
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">
-                      Notifikasi
+                      {t('notif')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {notifications ? "Aktif" : "Nonaktif"}
+                      {t('desc_notif')}
                     </p>
                   </div>
                 </div>
@@ -205,7 +228,7 @@ export default function MobileProfile() {
                 </span>
               </button>
 
-              {/* ACHIEVEMENTS / GAMIFICATION */}
+              {/* ACHIEVEMENTS */}
               <Link
                 to="/gamification"
                 className="flex items-center justify-between p-4 hover:bg-accent transition block w-full"
@@ -217,10 +240,10 @@ export default function MobileProfile() {
 
                   <div className="text-left">
                     <p className="text-sm font-bold text-foreground">
-                      Achievement
+                      {t('achievements')}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      Level & Kesehatan Finansial
+                      {t('achievements_desc')}
                     </p>
                   </div>
                 </div>
@@ -234,35 +257,41 @@ export default function MobileProfile() {
         {/* KEAMANAN */}
         <div>
           <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-            Akun & Keamanan
+            {t('security')}
           </h3>
 
           <Card className="border-border bg-card shadow-sm overflow-hidden">
             <div className="flex flex-col divide-y divide-border text-foreground">
 
-              <button className="flex items-center justify-between p-4 hover:bg-accent transition text-left">
+              <NavLink 
+                to="/profile/settings"
+                className="flex items-center justify-between p-4 hover:bg-accent transition text-left"
+              >
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-muted">
                     <Shield className="w-4 h-4" />
                   </div>
                   <p className="text-sm font-bold">
-                    PIN & Keamanan
+                    {t('privacy')}
                   </p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </button>
+              </NavLink>
 
-              <button className="flex items-center justify-between p-4 hover:bg-accent transition text-left">
+              <NavLink 
+                to="/profile/settings"
+                className="flex items-center justify-between p-4 hover:bg-accent transition text-left"
+              >
                 <div className="flex items-center gap-3">
                   <div className="p-2 rounded-lg bg-muted">
                     <Settings className="w-4 h-4" />
                   </div>
                   <p className="text-sm font-bold">
-                    Pengaturan Akun
+                    {t('settings')}
                   </p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </button>
+              </NavLink>
             </div>
           </Card>
         </div>
@@ -270,7 +299,7 @@ export default function MobileProfile() {
         {/* BANTUAN */}
         <div>
           <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 px-1">
-            Bantuan
+            {t('help')}
           </h3>
 
           <Card className="border-border bg-card shadow-sm overflow-hidden">
@@ -282,7 +311,7 @@ export default function MobileProfile() {
                     <CircleHelp className="w-4 h-4" />
                   </div>
                   <p className="text-sm font-bold">
-                    Bantuan & FAQ
+                    {t('faq')}
                   </p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -294,7 +323,7 @@ export default function MobileProfile() {
                     <CircleHelp className="w-4 h-4" />
                   </div>
                   <p className="text-sm font-bold">
-                    Tentang Aplikasi
+                    {t('about')}
                   </p>
                 </div>
                 <ChevronRight className="w-4 h-4 text-muted-foreground" />
@@ -308,9 +337,10 @@ export default function MobileProfile() {
       <Button
         variant="destructive"
         className="w-full h-12 mt-6 font-bold text-md gap-2"
+        onClick={() => navigate("/login")}
       >
         <LogOut className="w-5 h-5" />
-        Keluar Akun
+        {t('logout')}
       </Button>
 
       {/* VERSION */}

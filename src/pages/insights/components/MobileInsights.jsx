@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 
 export default function MobileInsights() {
-  const { mode } = useMode(); 
+  const { mode, t } = useMode(); 
   const { summary, chartData, categoryData, recentActivity, loading } = useDashboardData();
   
   const isPersonal = mode === 'personal';
@@ -45,6 +45,20 @@ export default function MobileInsights() {
   const [isCustomCategory, setIsCustomCategory] = useState(false);
   const [customCategoryName, setCustomCategoryName] = useState('');
   const [newBudgetLimit, setNewBudgetLimit] = useState('');
+
+  // Helper Nerjemahin Kategori
+  const getTranslatedCategory = (catName) => {
+    if (catName === 'Operasional') return t('cat_ops');
+    if (catName === 'Bahan Baku') return t('cat_raw');
+    if (catName === 'Penjualan') return t('cat_sales');
+    if (catName === 'Modal') return t('cat_capital');
+    if (catName === 'Lain-lain') return t('cat_others');
+    if (catName === 'Pemasaran') return t('cat_marketing');
+    if (catName === 'Gaji Pokok') return t('cat_salary');
+    if (catName === 'Tagihan') return t('cat_bills');
+    if (catName === 'Sewa') return t('cat_rent');
+    return catName;
+  };
 
   const handleAddBudget = (e) => {
     e.preventDefault();
@@ -90,12 +104,16 @@ export default function MobileInsights() {
       <AnimatedContent distance={30} delay={0.1} direction="vertical">
         <header className="flex justify-between items-end">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Insight Keuangan</h1>
-            <p className="text-sm text-muted-foreground mt-1">Analisis mendalam seputar arus kasmu.</p>
+            <h1 className="text-3xl font-extrabold tracking-tight">
+              {t('nav_insight')}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              {t('insight_subtitle')}
+            </p>
           </div>
           {!isPersonal && (
             <button onClick={handleExportPDF} className="bg-slate-900 dark:bg-blue-600 hover:bg-slate-800 dark:hover:bg-blue-500 text-white text-sm font-bold py-2.5 px-5 rounded-xl transition-all shadow-md hover:shadow-lg flex items-center gap-2 border-none cursor-pointer">
-              <Download className="w-4 h-4" /> Export Laporan (PDF)
+              <Download className="w-4 h-4" /> {t('export_pdf')}
             </button>
           )}
         </header>
@@ -113,10 +131,10 @@ export default function MobileInsights() {
               <CardContent className="p-5 flex gap-4 items-start">
                 <Lightbulb className={`w-6 h-6 shrink-0 mt-0.5 ${themeColor}`} />
                 <div>
-                  <h3 className={`text-base font-bold ${themeColor} mb-2`}>Insight Cerdas</h3>
-                  <p className="text-sm opacity-90 leading-relaxed">
-                    Pengeluaran terbesarmu bulan ini ada di kategori <span className="font-bold">{activeData[0].name}</span>. 
-                    {isPersonal ? " Coba kurangi jajan di luar untuk berhemat." : " Pastikan harga jual produkmu sudah menutupi modal ini."}
+                  <h3 className={`text-base font-bold ${themeColor} mb-2`}>{t('smart_insight')}</h3>
+                  <p className="text-sm opacity-90 leading-relaxed text-foreground">
+                    {t('insight_spending_prefix')} <span className="font-bold">{getTranslatedCategory(activeData[0].name)}</span>. 
+                    {isPersonal ? ` ${t('insight_tip_personal')}` : ` ${t('insight_tip_umkm')}`}
                   </p>
                 </div>
               </CardContent>
@@ -127,8 +145,10 @@ export default function MobileInsights() {
           <AnimatedContent distance={40} delay={0.3} direction="vertical" className="flex flex-col flex-1 min-h-[350px]">
             <Card className="bg-card border-border shadow-sm overflow-hidden flex flex-col h-full w-full">
               <CardHeader className="pb-0 shrink-0">
-                <CardTitle className="text-base">Distribusi Kategori</CardTitle>
-                <CardDescription className="text-sm">Berdasarkan total Rp{(totalExpense/1000000).toFixed(1)} Juta</CardDescription>
+                <CardTitle className="text-base text-foreground">{t('category_dist')}</CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">
+                  {t('based_on')} Rp{(totalExpense/1000000).toFixed(1)} Juta
+                </CardDescription>
               </CardHeader>
               <CardContent className="p-0 flex flex-col items-center flex-1 justify-center">
                 <div className="h-[220px] w-full mt-4">
@@ -139,12 +159,12 @@ export default function MobileInsights() {
                     <div key={index} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
-                        <span className="text-sm font-medium text-muted-foreground">{item.name}</span>
+                        <span className="text-sm font-medium text-muted-foreground">{getTranslatedCategory(item.name)}</span>
                       </div>
                       <div className="flex items-center gap-4">
-                        <span className="text-sm font-bold">{item.value}%</span>
+                        <span className="text-sm font-bold text-foreground">{formatIDR(item.value)}</span>
                         <span className="text-xs text-muted-foreground font-bold w-12 text-right">
-                          {item.value}%
+                          {Math.round((item.value / totalExpense) * 100)}%
                         </span>
                       </div>
                     </div>
@@ -156,7 +176,7 @@ export default function MobileInsights() {
 
           {/* Gamification Card */}
           <AnimatedContent distance={40} delay={0.4} direction="vertical" className="shrink-0">
-            <Card className="border-none shadow-sm relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 w-full">
+            <Card className="border-none shadow-sm relative overflow-hidden bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 w-full text-foreground">
               <div className="absolute -right-4 -top-4 w-20 h-20 bg-amber-400/20 rounded-full blur-2xl"></div>
               <CardContent className="p-5 flex flex-col gap-4 relative z-10">
                 <div className="flex items-center justify-between">
@@ -165,20 +185,20 @@ export default function MobileInsights() {
                       <Trophy className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                      <h3 className="text-sm font-bold">Master Finansial</h3>
+                      <h3 className="text-sm font-bold">{t('master_finansial')}</h3>
                       <p className="text-xs font-semibold text-amber-600 flex items-center gap-1">Level 4 <Sparkles className="w-3 h-3" /></p>
                     </div>
                   </div>
                   <div className="text-right text-muted-foreground">
                     <span className="text-xs font-bold text-foreground">850 XP</span>
-                    <p className="text-[10px]">ke Level 5</p>
+                    <p className="text-[10px]">{t('to_level')}</p>
                   </div>
                 </div>
                 <div className="space-y-1.5">
                   <div className="w-full h-2 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner flex">
                     <div className="h-full bg-gradient-to-r from-amber-400 to-orange-500 rounded-full" style={{ width: '70%' }}></div>
                   </div>
-                  <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">Hebat! Pengeluaranmu 15% lebih irit bulan ini (+50 XP). Terus pertahankan!</p>
+                  <p className="text-[10px] text-muted-foreground font-medium leading-relaxed">{t('gamification_tip')}</p>
                 </div>
               </CardContent>
             </Card>
@@ -191,15 +211,15 @@ export default function MobileInsights() {
             
             {/* Analisis Tren */}
             <AnimatedContent distance={40} delay={0.5} direction="vertical" className="flex flex-col h-full">
-              <Card className="bg-card border-border shadow-sm flex flex-col h-full w-full">
+              <Card className="bg-card border-border shadow-sm flex flex-col h-full w-full text-foreground">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-base flex justify-between items-center">
-                    <span>Perbandingan Tren</span>
+                    <span>{t('cashflow_trend')}</span>
                     <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-100 dark:bg-emerald-900/40 px-2.5 py-1 rounded-full">
-                      <TrendingDown className="w-3.5 h-3.5" /> 15% Lebih Hemat
+                      <TrendingDown className="w-3.5 h-3.5" /> 15% {t('more_saving')}
                     </div>
                   </CardTitle>
-                  <CardDescription className="text-sm">Bulan ini vs Bulan lalu</CardDescription>
+                  <CardDescription className="text-sm">{t('vs_last_month')}</CardDescription>
                 </CardHeader>
                 <CardContent className="p-5 flex-1 flex flex-col justify-center">
                   <div className="h-[220px] w-full">
@@ -216,9 +236,9 @@ export default function MobileInsights() {
                   <div className="absolute top-0 right-0 w-48 h-48 bg-blue-500/20 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
                   <CardHeader className="pb-4 relative z-10">
                     <div className="flex justify-between items-center">
-                      <CardTitle className="text-base flex items-center gap-2">
+                      <CardTitle className="text-base flex items-center gap-2 text-white">
                         <FileText className="w-5 h-5 text-blue-400" />
-                        Laporan Laba Rugi
+                        {t('monthly_report')}
                       </CardTitle>
                       <CardDescription className="text-xs font-medium text-slate-400">Okt 2024</CardDescription>
                     </div>
@@ -226,30 +246,30 @@ export default function MobileInsights() {
                   <CardContent className="p-6 pt-0 space-y-6 relative z-10 flex-1 flex flex-col justify-between">
                     <div className="grid grid-cols-2 gap-4 border-b border-slate-700/50 pb-5">
                       <div>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-bold">Pendapatan Kotor</p>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-bold">{t('income')}</p>
                         <p className="text-lg font-black text-emerald-400">{formatIDR(summary.total_income)}</p>
                       </div>
                       <div>
-                        <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-bold">Total Biaya</p>
+                        <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1.5 font-bold">{t('expense')}</p>
                         <p className="text-lg font-black text-rose-400">{formatIDR(summary.total_expense)}</p>
                       </div>
                     </div>
                     <div>
-                      <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-bold">Laba Bersih (Net Profit)</p>
+                      <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-1 font-bold">{t('net_profit')}</p>
                       <p className="text-4xl font-black text-white">{formatIDR(summary.profit_loss)}</p>
                       <div className="inline-block bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-xs font-bold px-3 py-1.5 rounded-full mt-4">Statistik Real-Time</div>
                     </div>
                   </CardContent>
                 </Card>
               ) : (
-                <Card className="bg-card border-border shadow-sm flex flex-col h-full w-full">
+                <Card className="bg-card border-border shadow-sm flex flex-col h-full w-full text-foreground">
                   <CardHeader className="pb-3 flex flex-row items-center justify-between">
                     <div>
-                      <CardTitle className="text-base flex items-center gap-2">
+                      <CardTitle className="text-base flex items-center gap-2 text-foreground">
                         <Target className="w-5 h-5 text-rose-500" />
-                        Anggaran Kategori
+                        {t('budget_category')}
                       </CardTitle>
-                      <CardDescription className="text-sm">Pantau batas pengeluaranmu dari budget</CardDescription>
+                      <CardDescription className="text-sm">{t('budget_desc')}</CardDescription>
                     </div>
                     <Button variant="outline" size="sm" className="h-8 gap-1 text-xs" onClick={() => setIsModalOpen(true)}>
                       <Plus className="w-3.5 h-3.5" /> Budget
@@ -262,7 +282,7 @@ export default function MobileInsights() {
                       return (
                         <div key={idx} className="space-y-2">
                           <div className="flex justify-between text-sm font-bold">
-                            <span>{item.category}</span>
+                            <span className="text-foreground">{getTranslatedCategory(item.category)}</span>
                             <span className={isOver ? "text-rose-600" : "text-muted-foreground"}>
                               {formatIDR(item.spent)} <span className="opacity-40 font-normal">/ {formatIDR(item.limit)}</span>
                             </span>
@@ -272,7 +292,7 @@ export default function MobileInsights() {
                           </div>
                           {isOver && (
                             <p className="text-xs font-bold text-rose-500 flex items-center gap-1.5 mt-1">
-                              <AlertCircle className="w-3.5 h-3.5" /> Peringatan: Anggaran berlebih!
+                              <AlertCircle className="w-3.5 h-3.5" /> {t('budget_warning')}
                             </p>
                           )}
                         </div>
@@ -287,21 +307,21 @@ export default function MobileInsights() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Top 5 Pengeluaran */}
             <AnimatedContent distance={40} delay={0.7} direction="vertical" className="flex flex-col h-full">
-              <Card className="bg-card border-border shadow-sm flex flex-col w-full h-full">
+              <Card className="bg-card border-border shadow-sm flex flex-col w-full h-full text-foreground">
                 <CardHeader className="pb-4">
-                  <CardTitle className="text-base flex items-center gap-2">
+                  <CardTitle className="text-base flex items-center gap-2 text-foreground">
                     <Receipt className="w-5 h-5 text-muted-foreground" />
-                    Top 5 Pengeluaran
+                    {t('top_5_expense')}
                   </CardTitle>
-                  <CardDescription className="text-sm">Pengeluaran terbesar bulan ini</CardDescription>
+                  <CardDescription className="text-sm">{t('biggest_spending')}</CardDescription>
                 </CardHeader>
                 <CardContent className="p-5 pt-0 space-y-3 flex-1">
                   {topExpenses.map((trx, idx) => (
-                    <div key={trx.id} className="bg-muted/50 border border-border p-4 rounded-xl shadow-sm flex items-center justify-between hover:bg-accent transition-colors">
+                    <div key={trx.id} className="bg-muted/50 border border-border p-4 rounded-xl shadow-sm flex items-center justify-between hover:bg-accent transition-colors text-foreground">
                       <div className="flex items-center gap-4">
                         <div className="w-8 h-8 rounded-full bg-card border border-border text-muted-foreground flex items-center justify-center text-sm font-bold shrink-0 shadow-sm">{idx + 1}</div>
                         <div>
-                          <p className="text-sm font-bold line-clamp-1">{trx.action}</p>
+                          <p className="text-sm font-bold line-clamp-1">{getTranslatedCategory(trx.action || trx.name)}</p>
                           <p className="text-xs text-muted-foreground mt-0.5">{trx.date}</p>
                         </div>
                       </div>
@@ -315,20 +335,22 @@ export default function MobileInsights() {
             {/* Empty State / Tracker Placeholder */}
             <AnimatedContent distance={40} delay={0.8} direction="vertical" className="flex flex-col h-full">
               {isPersonal ? (
-                 <Card className="border-dashed border-2 bg-transparent border-border flex flex-col items-center justify-center p-8 text-center h-full min-h-[250px] shadow-none w-full">
-                   <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
-                     <Target className="w-8 h-8 text-muted-foreground" />
-                   </div>
-                   <h3 className="text-sm font-bold text-foreground">Jaga Pengeluaran Anda</h3>
-                   <p className="text-xs text-muted-foreground mt-2 max-w-[200px]">Tetap berada dalam anggaran bulan ini untuk mencapai target tabungan liburan Anda.</p>
-                 </Card>
+                  <Card className="border-dashed border-2 bg-transparent border-border flex flex-col items-center justify-center p-8 text-center h-full min-h-[250px] shadow-none w-full text-foreground">
+                    <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mb-4">
+                      <Target className="w-8 h-8 text-muted-foreground" />
+                    </div>
+                    <h3 className="text-sm font-bold">{t('insight_footer_title')}</h3>
+                    <p className="text-xs text-muted-foreground mt-2 max-w-[200px]">{t('insight_footer_desc')}</p>
+                  </Card>
               ) : (
-                <Card className="bg-card border-border shadow-sm flex flex-col h-full w-full">
+                <Card className="bg-card border-border shadow-sm flex flex-col h-full w-full text-foreground">
                   <CardHeader className="pb-4 flex flex-row items-center justify-between">
-                    <CardTitle className="text-base flex items-center gap-2">
-                      <Target className="w-5 h-5 text-rose-500" />
-                      Anggaran Kategori
-                    </CardTitle>
+                    <div>
+                      <CardTitle className="text-base flex items-center gap-2 text-foreground">
+                        <Target className="w-5 h-5 text-rose-500" />
+                        {t('budget_category')}
+                      </CardTitle>
+                    </div>
                     <Button variant="outline" size="sm" className="h-8 gap-1 text-xs" onClick={() => setIsModalOpen(true)}>
                       <Plus className="w-3.5 h-3.5" /> Budget
                     </Button>
@@ -340,7 +362,7 @@ export default function MobileInsights() {
                       return (
                         <div key={idx} className="space-y-2">
                           <div className="flex justify-between text-sm font-bold">
-                            <span>{item.category}</span>
+                            <span className="text-foreground">{getTranslatedCategory(item.category)}</span>
                             <span className={isOver ? "text-rose-600" : "text-muted-foreground"}>
                               {formatIDR(item.spent)} <span className="opacity-40 font-normal">/ {formatIDR(item.limit)}</span>
                             </span>
@@ -362,20 +384,20 @@ export default function MobileInsights() {
       {/* Modal / Dialog Tambah Anggaran */}
       {isModalOpen && createPortal(
         <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <Card className="w-full max-w-md bg-card border-border shadow-2xl animate-in zoom-in-95 duration-200">
-            <CardHeader className="pb-4 border-b border-border flex flex-row items-center justify-between">
+          <Card className="w-full max-w-md bg-card border-border shadow-2xl animate-in zoom-in-95 duration-200 text-foreground">
+            <CardHeader className="pb-4 border-b border-border flex flex-row items-center justify-between text-foreground">
               <div>
-                <CardTitle className="text-lg">Tambah Anggaran Baru</CardTitle>
-                <CardDescription className="text-sm">Atur batas anggaran belanja untuk kategori tambahan.</CardDescription>
+                <CardTitle className="text-lg">{t('add_budget_title')}</CardTitle>
+                <CardDescription className="text-sm text-muted-foreground">{t('add_budget_desc')}</CardDescription>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full -mr-2" onClick={() => setIsModalOpen(false)}>
-                <X className="w-5 h-5 text-muted-foreground" />
+              <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full -mr-2 text-muted-foreground" onClick={() => setIsModalOpen(false)}>
+                <X className="w-5 h-5" />
               </Button>
             </CardHeader>
             <CardContent className="p-6">
               <form onSubmit={handleAddBudget} className="space-y-5">
                 <div className="space-y-2.5">
-                  <label className="text-sm font-bold">Pilih Kategori</label>
+                  <label className="text-sm font-bold text-foreground">{t('select_category')}</label>
                   <select 
                     value={isCustomCategory ? 'custom' : newBudgetCategory}
                     onChange={(e) => {
@@ -387,9 +409,9 @@ export default function MobileInsights() {
                       }
                     }}
                     required={!isCustomCategory}
-                    className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                    className="flex h-10 w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-sm focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
                   >
-                    <option value="" disabled>-- Pilih Kategori --</option>
+                    <option value="" disabled>-- {t('select_category')} --</option>
                     {isPersonal ? (
                       <>
                         <option value="Belanja Bulanan">Belanja Bulanan</option>
@@ -405,7 +427,7 @@ export default function MobileInsights() {
                         <option value="Biaya Admin / Pajak">Biaya Admin / Pajak</option>
                       </>
                     )}
-                    <option value="custom" className="font-bold text-blue-600">+ Kategori Custom Baru...</option>
+                    <option value="custom" className="font-bold text-blue-600">+ {t('custom_category')}</option>
                   </select>
                   {isCustomCategory && (
                     <div className="pt-2 animate-in fade-in slide-in-from-top-1 duration-200">
@@ -415,24 +437,24 @@ export default function MobileInsights() {
                         required 
                         value={customCategoryName}
                         onChange={(e) => setCustomCategoryName(e.target.value)}
-                        className="h-10 text-sm"
+                        className="h-10 text-sm text-foreground"
                         autoFocus
                       />
                     </div>
                   )}
                 </div>
                 <div className="space-y-2.5">
-                  <label className="text-sm font-bold">Batas Anggaran (Rp)</label>
+                  <label className="text-sm font-bold text-foreground">{t('amount')} (Rp)</label>
                   <Input 
                     type="number" 
                     placeholder="Misal: 500000" 
                     required 
                     value={newBudgetLimit}
                     onChange={(e) => setNewBudgetLimit(e.target.value)}
-                    className="text-base py-2 h-10"
+                    className="text-base py-2 h-10 text-foreground"
                   />
                 </div>
-                <Button type="submit" className="w-full mt-4 font-bold text-sm bg-blue-600 hover:bg-blue-700 h-10 border-none text-white">Simpan Anggaran</Button>
+                <Button type="submit" className="w-full mt-4 font-bold text-sm bg-blue-600 hover:bg-blue-700 h-10 border-none text-white transition-colors">{t('save')}</Button>
               </form>
             </CardContent>
           </Card>

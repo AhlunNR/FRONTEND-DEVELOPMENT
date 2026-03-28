@@ -4,15 +4,23 @@ import TransactionCard from "@/components/transactions/TransactionCard";
 import TransactionSearchBox from "@/components/transactions/TransactionSearchBox";
 import TransactionExportMenu from "@/components/transactions/TransactionExportMenu";
 import { handleExportPDF, handleExportCSV } from "@/utils/export";
+import { useMode } from "@/contexts/ModeContext"; // Import useMode
 
 export default function DesktopTransactions({ searchQuery, setSearchQuery, filteredTransactions }) {
+  const { t } = useMode(); // Inisialisasi fungsi t
+
   return (
     <div className="w-full max-w-7xl mx-auto px-8 py-10 space-y-8 animate-in fade-in zoom-in-95 duration-500 bg-background text-foreground transition-colors" id="snap-main-container">
+      
       <div className="flex items-end justify-between">
         <AnimatedContent distance={30} delay={0.1} direction="vertical">
           <header>
-            <h1 className="text-3xl font-bold tracking-tight">Riwayat Transaksi</h1>
-            <p className="text-sm text-muted-foreground mt-1 text-balance">Pantau riwayat lengkap sirkulasi keuangan KasFlow dalam satu layar lebar.</p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              {t('nav_transaksi')}
+            </h1>
+            <p className="text-sm text-muted-foreground mt-1 text-balance">
+              {t('trans_desc') || "Pantau riwayat lengkap sirkulasi keuangan KasFlow dalam satu layar lebar."}
+            </p>
           </header>
         </AnimatedContent>
 
@@ -41,8 +49,12 @@ export default function DesktopTransactions({ searchQuery, setSearchQuery, filte
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-muted-foreground border-2 border-dashed border-border rounded-xl bg-card/50">
             <FileQuestion className="w-16 h-16 mb-4 opacity-20" />
-            <p className="text-xl font-bold tracking-tight text-foreground">Transaksi tidak ditemukan</p>
-            <p className="text-sm mt-1 opacity-80">Tidak ada riwayat yang cocok dengan kata kunci Anda.</p>
+            <p className="text-xl font-bold tracking-tight text-foreground">
+              {t('trans_not_found') || "Transaksi tidak ditemukan"}
+            </p>
+            <p className="text-sm mt-1 opacity-80">
+              {t('trans_not_found_desc') || "Tidak ada riwayat yang cocok dengan kata kunci Anda."}
+            </p>
           </div>
         )}
       </AnimatedContent>

@@ -14,13 +14,28 @@ import { useMode } from "@/contexts/ModeContext";
 import { useDashboardData } from "../hooks/useDashboardData";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 
-const formatIDR = (amount) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount);
-const formatDate = (dateString) => new Date(dateString).toLocaleDateString('id-ID', { weekday: 'short', day: 'numeric', month: 'short' });
-
 export default function MobileDashboard() {
-  const { mode } = useMode();
+  const { mode, t, language } = useMode();
   const { summary, chartData, recentActivity, loading } = useDashboardData();
   
+  // Format IDR tetep, tapi formatDate kita bikin nyesuain bahasa
+  const formatIDR = (amount) => new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(amount);
+  
+  const formatDate = (dateString) => {
+    const localeMap = {
+      "Indonesia": "id-ID",
+      "English (US)": "en-US",
+      "English (British)": "en-GB",
+      "Malay": "ms-MY",
+      "Japanese": "ja-JP"
+    };
+    return new Date(dateString).toLocaleDateString(localeMap[language] || 'id-ID', { 
+      weekday: 'short', 
+      day: 'numeric', 
+      month: 'short' 
+    });
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-background">
@@ -38,8 +53,10 @@ export default function MobileDashboard() {
       <AnimatedContent distance={30} delay={0.1} direction="vertical">
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-xl font-bold tracking-tight">Halo, Devoryn! 👋</h1>
-            <p className="text-xs text-muted-foreground mt-0.5">Ringkasan kas {mode === 'umkm' ? 'UMKM' : 'Personal'}-mu hari ini.</p>
+            <h1 className="text-xl font-bold tracking-tight">{t('hello')}, Devoryn! 👋</h1>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {t('mobile_summary_prefix') || "Ringkasan kas"} {mode === 'umkm' ? t('mode_u_short') : t('mode_p_short')} {t('mobile_summary_suffix') || "-mu hari ini."}
+            </p>
           </div>
         </header>
       </AnimatedContent>
@@ -51,21 +68,21 @@ export default function MobileDashboard() {
           <CardContent className="p-5 relative z-10">
             <div className="flex items-center gap-2 text-slate-400 mb-2">
               <Wallet className="w-4 h-4" />
-              <span className="text-xs font-medium uppercase tracking-wider">Total Saldo Aktif</span>
+              <span className="text-xs font-medium uppercase tracking-wider">{t('total_balance')}</span>
             </div>
             <div className="text-3xl font-extrabold tracking-tight mb-5">{formatIDR(summary.balance)}</div>
             <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
               <div>
                 <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 mb-1">
                   <div className="bg-emerald-500/20 p-1 rounded-full"><ArrowUpRight className="w-3 h-3 text-emerald-400" /></div>
-                  PEMASUKAN
+                  {t('income').toUpperCase()}
                 </div>
                 <div className="text-sm font-bold text-slate-100">{formatIDR(summary.total_income)}</div>
               </div>
               <div>
                 <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 mb-1">
                   <div className="bg-rose-500/20 p-1 rounded-full"><ArrowDownRight className="w-3 h-3 text-rose-400" /></div>
-                  PENGELUARAN
+                  {t('expense').toUpperCase()}
                 </div>
                 <div className="text-sm font-bold text-slate-100">{formatIDR(summary.total_expense)}</div>
               </div>
@@ -81,14 +98,14 @@ export default function MobileDashboard() {
             <div className="bg-emerald-500/10 p-2 rounded-full mb-2 group-hover:scale-110 transition-transform">
               <ArrowUpRight className="w-5 h-5 text-emerald-600" />
             </div>
-            <span className="text-[10px] font-bold">Pemasukan</span>
+            <span className="text-[10px] font-bold">{t('income')}</span>
           </Link>
 
           <Link to="/add" state={{ type: 'expense' }} className="flex flex-col items-center justify-center p-3 bg-card border border-border rounded-2xl shadow-sm hover:bg-accent active:scale-95 transition-all group">
             <div className="bg-rose-500/10 p-2 rounded-full mb-2 group-hover:scale-110 transition-transform">
               <ArrowDownRight className="w-5 h-5 text-rose-600" />
             </div>
-            <span className="text-[10px] font-bold">Pengeluaran</span>
+            <span className="text-[10px] font-bold">{t('expense')}</span>
           </Link>
 
           {/* Tombol Scan Tetap Berwarna */}
@@ -97,7 +114,7 @@ export default function MobileDashboard() {
             <div className="bg-white/20 p-2 rounded-full mb-2 group-hover:scale-110 transition-transform relative z-10">
               <Scan className="w-5 h-5 text-white" />
             </div>
-            <span className="text-[10px] font-bold text-white relative z-10">Scan Struk</span>
+            <span className="text-[10px] font-bold text-white relative z-10">{t('scan_receipt')}</span>
           </button>
         </div>
       </AnimatedContent>
@@ -105,7 +122,7 @@ export default function MobileDashboard() {
       {/* Grafik Arus Kas */}
       <AnimatedContent distance={40} delay={0.4} direction="vertical">
         <div className="space-y-3">
-          <h2 className="text-sm font-bold px-1">Statistik Arus Kas</h2>
+          <h2 className="text-sm font-bold px-1">{t('cashflow_trend')}</h2>
           <Card className="bg-card border-border shadow-sm rounded-xl overflow-hidden">
             <CardContent className="p-0 pt-4 pb-0 px-0">
               <div className="h-[200px] w-full">
@@ -120,9 +137,9 @@ export default function MobileDashboard() {
       <AnimatedContent distance={30} delay={0.5} direction="vertical">
         <div className="pt-2 pb-6">
           <div className="flex justify-between items-center mb-3 px-1">
-            <h2 className="text-sm font-bold">Transaksi Terakhir</h2>
+            <h2 className="text-sm font-bold">{t('recent_trans')}</h2>
             <Link to="/transactions" className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center">
-              Lihat Semua <ChevronRight className="w-3 h-3 ml-0.5" />
+              {t('view_all')} <ChevronRight className="w-3 h-3 ml-0.5" />
             </Link>
           </div>
           
@@ -137,7 +154,7 @@ export default function MobileDashboard() {
                     <div>
                       <p className="text-xs font-bold">{trx.action}</p>
                       <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
-                        <Calendar className="w-3 h-3" /> {trx.date}
+                        <Calendar className="w-3 h-3" /> {formatDate(trx.dateISO || trx.date)}
                       </div>
                     </div>
                   </div>

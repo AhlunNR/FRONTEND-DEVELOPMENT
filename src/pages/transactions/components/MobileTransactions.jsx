@@ -4,14 +4,21 @@ import TransactionCard from "@/components/transactions/TransactionCard";
 import TransactionSearchBox from "@/components/transactions/TransactionSearchBox";
 import TransactionExportMenu from "@/components/transactions/TransactionExportMenu";
 import { handleExportPDF, handleExportCSV } from "@/utils/export";
+import { useMode } from "@/contexts/ModeContext"; // Import useMode
 
 export default function MobileTransactions({ searchQuery, setSearchQuery, filteredTransactions }) {
+  const { t } = useMode(); // Inisialisasi fungsi t
+
   return (
     <div className="pb-24 bg-background text-foreground p-4 space-y-4 animate-in fade-in zoom-in-95 duration-300 transition-colors w-full" id="snap-main-container">
       <AnimatedContent distance={30} delay={0.1} direction="vertical">
         <header className="mb-4">
-          <h1 className="text-xl font-bold tracking-tight">Riwayat Transaksi</h1>
-          <p className="text-xs text-muted-foreground mt-0.5">Pantau semua pengeluaran dan pemasukanmu.</p>
+          <h1 className="text-xl font-bold tracking-tight">
+            {t('nav_transaksi')}
+          </h1>
+          <p className="text-xs text-muted-foreground mt-0.5">
+            {t('trans_desc_mobile') || "Pantau semua pengeluaran dan pemasukanmu."}
+          </p>
         </header>
       </AnimatedContent>
 
@@ -36,7 +43,9 @@ export default function MobileTransactions({ searchQuery, setSearchQuery, filter
           ) : (
             <div className="flex flex-col items-center justify-center py-10 text-muted-foreground">
               <FileQuestion className="w-10 h-10 mb-3 opacity-20" />
-              <p className="text-sm font-medium">Transaksi tidak ditemukan</p>
+              <p className="text-sm font-medium">
+                {t('trans_not_found')}
+              </p>
             </div>
           )}
         </div>

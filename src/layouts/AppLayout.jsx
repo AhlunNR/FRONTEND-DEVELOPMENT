@@ -4,7 +4,7 @@ import { useMode } from '../contexts/ModeContext';
 import AIChatBot from '../components/chat/AIChatBot';
 
 export default function AppLayout() {
-  const { mode, toggleMode, theme } = useMode();
+  const { mode, toggleMode, theme, t } = useMode();
 
   const isPersonal = mode === 'personal';
   const isDark = theme === 'dark';
@@ -39,29 +39,29 @@ export default function AppLayout() {
         {/* Switcher Mode */}
         <div className="mb-6 p-1 bg-muted rounded-xl flex border border-border">
           <button onClick={toggleMode} className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all ${isPersonal ? 'bg-card text-purple-600 dark:text-purple-400 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-            <User className="w-4 h-4" /> Personal
+            <User className="w-4 h-4" /> {t('mode_p_short')}
           </button>
           <button onClick={toggleMode} className={`flex-1 flex items-center justify-center gap-2 py-2 text-xs font-bold rounded-lg transition-all ${!isPersonal ? 'bg-card text-blue-600 dark:text-blue-400 shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>
-            <Store className="w-4 h-4" /> UMKM
+            <Store className="w-4 h-4" /> {t('mode_u_short')}
           </button>
         </div>
         
         <nav className="flex flex-col gap-1.5">
           <NavLink to="/dashboard" className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-sm ${isActive ? modeBg : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
-            <Home className="w-5 h-5" /> Dashboard
+            <Home className="w-5 h-5" /> {t('nav_dashboard')}
           </NavLink>
           <NavLink to="/transactions" className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-sm ${isActive ? modeBg : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
-            <Receipt className="w-5 h-5" /> Transaksi
+            <Receipt className="w-5 h-5" /> {t('nav_transaksi')}
           </NavLink>
           <NavLink to="/insights" className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-sm ${isActive ? modeBg : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
-            <PieChart className="w-5 h-5" /> Insight
+            <PieChart className="w-5 h-5" /> {t('nav_insight')}
           </NavLink>
           <NavLink to="/profile" className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-sm ${isActive ? modeBg : "text-muted-foreground hover:bg-accent hover:text-foreground"}`}>
-            <UserCircle className="w-5 h-5" /> Profil
+            <UserCircle className="w-5 h-5" /> {t('nav_profil')}
           </NavLink>
           
           <NavLink to="/add" className={({ isActive }) => `flex items-center gap-3 p-3 rounded-xl transition-all font-bold text-sm mt-4 ${isActive ? `${modeColor} text-white shadow-lg` : "bg-foreground text-background shadow-md hover:opacity-90"}`}>
-            <PlusCircle className="w-5 h-5" /> Catat Transaksi
+            <PlusCircle className="w-5 h-5" /> {t('btn_catat')}
           </NavLink>
         </nav>
       </aside>
@@ -71,7 +71,7 @@ export default function AppLayout() {
         {/* Floating Mode Toggle Mobile */}
         <div className="md:hidden absolute top-4 right-4 z-50">
           <button onClick={toggleMode} className={`flex items-center gap-2 px-3 py-2 rounded-full shadow-lg text-xs font-bold text-white transition-all active:scale-95 ${modeColor}`}>
-            {isPersonal ? <><User className="w-3.5 h-3.5" /> Personal</> : <><Store className="w-3.5 h-3.5" /> UMKM</>}
+            {isPersonal ? <><User className="w-3.5 h-3.5" /> {t('mode_p_short')}</> : <><Store className="w-3.5 h-3.5" /> {t('mode_u_short')}</>}
           </button>
         </div>
         <Outlet />
@@ -85,7 +85,7 @@ export default function AppLayout() {
             {({ isActive }) => (
               <>
                 <Home className={`w-6 h-6 mb-1 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-active:scale-95'}`} strokeWidth={isActive ? 2.5 : 2} />
-                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>Beranda</span>
+                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>{t('nav_beranda')}</span>
                 <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? modeColor : 'bg-transparent'}`}></div>
               </>
             )}
@@ -95,7 +95,7 @@ export default function AppLayout() {
             {({ isActive }) => (
               <>
                 <Receipt className={`w-6 h-6 mb-1 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-active:scale-95'}`} strokeWidth={isActive ? 2.5 : 2} />
-                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>Transaksi</span>
+                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>{t('nav_transaksi')}</span>
                 <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? modeColor : 'bg-transparent'}`}></div>
               </>
             )}
@@ -115,7 +115,7 @@ export default function AppLayout() {
             {({ isActive }) => (
               <>
                 <PieChart className={`w-6 h-6 mb-1 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-active:scale-95'}`} strokeWidth={isActive ? 2.5 : 2} />
-                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>Insight</span>
+                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>{t('nav_insight')}</span>
                 <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? modeColor : 'bg-transparent'}`}></div>
               </>
             )}
@@ -125,7 +125,7 @@ export default function AppLayout() {
             {({ isActive }) => (
               <>
                 <UserCircle className={`w-6 h-6 mb-1 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-active:scale-95'}`} strokeWidth={isActive ? 2.5 : 2} />
-                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>Profil</span>
+                <span className={`text-[9px] transition-all ${isActive ? "font-bold" : "font-medium"}`}>{t('nav_profil')}</span>
                 <div className={`w-1 h-1 rounded-full mt-1 transition-all duration-300 ${isActive ? modeColor : 'bg-transparent'}`}></div>
               </>
             )}

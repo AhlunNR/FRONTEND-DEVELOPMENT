@@ -6,8 +6,10 @@ import { toast } from "sonner";
 import { Loader2, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { transactionService } from "@/services/transaction.service";
+import { useMode } from "@/contexts/ModeContext";
 
 export default function AddTransaction() {
+  const { t } = useMode();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -20,8 +22,23 @@ export default function AddTransaction() {
   const [notes, setNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const incomeCategories = ["Penjualan", "Pendapatan Jasa", "Modal", "Lain-lain"];
-  const expenseCategories = ["Bahan Baku", "Operasional", "Pemasaran", "Gaji Pokok", "Tagihan", "Sewa", "Lain-lain"];
+  // KATEGORI DIBUAT DINAMIS BERDASARKAN KEY DI MODECONTEXT
+  const incomeCategories = [
+    { id: "cat_sales", name: t('cat_sales') },
+    { id: "cat_service", name: t('cat_service') },
+    { id: "cat_capital", name: t('cat_capital') },
+    { id: "cat_others", name: t('cat_others') }
+  ];
+
+  const expenseCategories = [
+    { id: "cat_raw", name: t('cat_raw') },
+    { id: "cat_ops", name: t('cat_ops') },
+    { id: "cat_marketing", name: t('cat_marketing') },
+    { id: "cat_salary", name: t('cat_salary') },
+    { id: "cat_bills", name: t('cat_bills') },
+    { id: "cat_rent", name: t('cat_rent') },
+    { id: "cat_others", name: t('cat_others') }
+  ];
 
   // Sinkronisasi dengan Router State
   useEffect(() => {
@@ -38,9 +55,9 @@ export default function AddTransaction() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name.trim()) return toast.error("Nama transaksi belum diisi!");
-    if (!amount || amount <= 0) return toast.error("Nominal tidak boleh kosong!");
-    if (!category.trim()) return toast.error("Kategori belum diisi!");
+    if (!name.trim()) return toast.error(t('error_name') || "Nama transaksi belum diisi!");
+    if (!amount || amount <= 0) return toast.error(t('error_amount') || "Nominal tidak boleh kosong!");
+    if (!category.trim()) return toast.error(t('error_category') || "Kategori belum diisi!");
 
     setIsSubmitting(true);
     try {
@@ -51,15 +68,15 @@ export default function AddTransaction() {
         description: name,
         note: notes,
         date,
-        // Optional: category_id if backend requires UUID, but backend currently accepts it or looks it up
+        category_id: category
       };
       await transactionService.createTransaction(payload);
-      toast.success(`Berhasil mencatat ${type === 'income' ? 'Pemasukan' : 'Pengeluaran'}!`);
+      toast.success(`${t('success_save') || 'Berhasil mencatat'} ${type === 'income' ? t('income') : t('expense')}!`);
       
       // Navigate back to dashboard or transactions
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.toString() || "Gagal menyimpan transaksi.");
+      toast.error(error.toString() || t('error_save') || "Gagal menyimpan transaksi.");
     } finally {
       setIsSubmitting(false);
     }
@@ -68,8 +85,8 @@ export default function AddTransaction() {
   return (
     <div className="min-h-screen bg-background text-foreground p-4 md:p-6 max-w-xl mx-auto w-full animate-in fade-in zoom-in-95 duration-300 transition-colors">
       <header className="mb-6">
-        <h1 className="text-xl font-bold tracking-tight">Catat Transaksi</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">Masukkan nominal kas baru di sini.</p>
+        <h1 className="text-xl font-bold tracking-tight">{t('add_title')}</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">{t('add_desc') || "Masukkan nominal kas baru di sini."}</p>
       </header>
 
       {/* Toggle Tipe Transaksi */}
@@ -83,7 +100,7 @@ export default function AddTransaction() {
               : "text-muted-foreground hover:bg-background/50"
           }`}
         >
-          <ArrowDownCircle className="w-4 h-4" /> Pengeluaran
+          <ArrowDownCircle className="w-4 h-4" /> {t('expense')}
         </button>
         
         <button
@@ -95,7 +112,7 @@ export default function AddTransaction() {
               : "text-muted-foreground hover:bg-background/50"
           }`}
         >
-          <ArrowUpCircle className="w-4 h-4" /> Pemasukan
+          <ArrowUpCircle className="w-4 h-4" /> {t('income')}
         </button>
       </div>
 
@@ -104,7 +121,7 @@ export default function AddTransaction() {
         <Card className={`border-border shadow-sm overflow-hidden transition-colors duration-500 ${type === 'income' ? 'bg-emerald-500/10' : 'bg-rose-500/10'}`}>
           <CardHeader className="pb-4">
             <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-wider">
-              Nominal {type === "expense" ? "Pengeluaran" : "Pemasukan"}
+              {t('amount')} {type === "expense" ? t('expense') : t('income')}
             </CardTitle>
             <div className="flex items-center text-4xl font-extrabold tracking-tighter">
               <span className={`mr-2 ${type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>Rp</span>
@@ -122,7 +139,7 @@ export default function AddTransaction() {
           
           <CardContent className="space-y-4 border-t border-border/50 pt-4 bg-card">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">Tanggal</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">{t('date_time')}</label>
               <Input 
                 type="date"
                 value={date}
@@ -133,10 +150,10 @@ export default function AddTransaction() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">Nama Transaksi</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">{t('trans_name') || "Nama Transaksi"}</label>
               <Input 
                 type="text"
-                placeholder="Contoh: Beli Token Listrik, Gaji Bulanan..."
+                placeholder={t('placeholder_name') || "Contoh: Beli Token Listrik..."}
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isSubmitting}
@@ -145,26 +162,27 @@ export default function AddTransaction() {
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">Kategori</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">{t('category')}</label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 disabled={isSubmitting}
                 className="w-full bg-background h-12 rounded-xl border border-border px-3 text-sm text-foreground outline-none focus-visible:ring-1 focus-visible:ring-primary transition-shadow"
               >
-                <option value="" disabled className="bg-card">Pilih Kategori</option>
-                {type === 'income' 
-                  ? incomeCategories.map(cat => <option key={cat} value={cat} className="bg-card">{cat}</option>)
-                  : expenseCategories.map(cat => <option key={cat} value={cat} className="bg-card">{cat}</option>)
-                }
+                <option value="" disabled className="bg-card">{t('select_category') || "Pilih Kategori"}</option>
+                {(type === 'income' ? incomeCategories : expenseCategories).map(cat => (
+                  <option key={cat.id} value={cat.id} className="bg-card">
+                    {cat.name}
+                  </option>
+                ))}
               </select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">Catatan (Opsional)</label>
+              <label className="text-xs font-bold text-muted-foreground uppercase tracking-wider px-1">{t('notes')}</label>
               <textarea 
                 rows={2}
-                placeholder="Tulis detail transaksi..." 
+                placeholder={t('placeholder_notes') || "Tulis detail transaksi..."} 
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 disabled={isSubmitting}
@@ -182,10 +200,10 @@ export default function AddTransaction() {
               {isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                  Menyimpan...
+                  {t('saving') || "Menyimpan..."}
                 </>
               ) : (
-                `Simpan ${type === 'income' ? 'Pemasukan' : 'Pengeluaran'}`
+                `${t('save')} ${type === 'income' ? t('income') : t('expense')}`
               )}
             </Button>
           </CardContent>
