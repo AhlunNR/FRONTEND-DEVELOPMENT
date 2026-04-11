@@ -52,21 +52,21 @@ export default function MobileDashboard() {
       <AnimatedContent distance={40} delay={0.2} direction="vertical">
         <BorderGlow {...GLOW}>
           <div className="p-5 relative z-10">
-            <div className="flex items-center gap-2 text-slate-400 mb-2">
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
               <Wallet className="w-4 h-4" />
               <span className="text-xs font-medium uppercase tracking-wider">Total Saldo Aktif</span>
             </div>
-            <div className="text-3xl font-extrabold tracking-tight mb-5">{formatIDR(summary.balance)}</div>
-            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-white/10">
+            <div className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-5 truncate">{formatIDR(summary.balance)}</div>
+            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/30">
               <div>
-                <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 mb-1">
+                <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground mb-1">
                   <div className="bg-emerald-500/20 p-1 rounded-full"><ArrowUpRight className="w-3 h-3 text-emerald-400" /></div>
                   PEMASUKAN
                 </div>
                 <div className="text-sm font-bold">{formatIDR(summary.total_income)}</div>
               </div>
               <div>
-                <div className="flex items-center gap-1.5 text-[10px] font-medium text-slate-400 mb-1">
+                <div className="flex items-center gap-1.5 text-[10px] font-medium text-muted-foreground mb-1">
                   <div className="bg-rose-500/20 p-1 rounded-full"><ArrowDownRight className="w-3 h-3 text-rose-400" /></div>
                   PENGELUARAN
                 </div>
@@ -141,12 +141,12 @@ export default function MobileDashboard() {
                       </div>
                       <div>
                         <p className="text-xs font-bold">{trx.category_name || trx.description || trx.action}</p>
-                        <div className="flex items-center gap-1 text-[10px] text-slate-400 mt-0.5">
+                        <div className="flex items-center gap-1 text-[10px] text-muted-foreground mt-0.5">
                           <Calendar className="w-3 h-3" /> {formatDate(trx.date || trx.dateISO)}
                         </div>
                       </div>
                     </div>
-                    <p className={`text-xs font-bold ${trx.type === 'income' ? 'text-emerald-400' : 'text-white'}`}>
+                    <p className={`text-xs font-bold ${trx.type === 'income' ? 'text-emerald-400' : 'text-foreground'}`}>
                       {trx.type === 'income' ? '+' : '-'}{formatIDR(trx.amount)}
                     </p>
                   </div>

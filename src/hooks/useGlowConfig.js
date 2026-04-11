@@ -28,7 +28,7 @@ export function useGlowConfig(variant = 'desktop') {
 
   return useMemo(() => ({
     edgeSensitivity: 30,
-    backgroundColor: '#060010',
+    backgroundColor: isDark ? '#060010' : '#ffffff',
     borderRadius: isMobile ? 16 : 20,
     glowRadius: isMobile ? 60 : 80,
     coneSpread: 45,

@@ -230,7 +230,7 @@ const BorderGlow = ({
       onPointerMove={handlePointerMove}
       onPointerEnter={handlePointerEnter}
       onPointerLeave={handlePointerLeave}
-      className={`relative grid isolate border border-white/15 ${className}`}
+      className={`relative grid isolate border border-border/20 ${className}`}
       style={{
         background: backgroundColor,
         borderRadius: `${borderRadius}px`,
@@ -287,7 +287,7 @@ const BorderGlow = ({
         />
       </span>
 
-      <div className="flex flex-col relative overflow-visible z-[1] dark text-white" style={{ colorScheme: 'dark' }}>
+      <div className="flex flex-col relative overflow-visible z-[1] text-foreground">
         {children}
       </div>
     </div>

@@ -107,12 +107,12 @@ export default function DesktopDashboard() {
               <BorderGlow {...GLOW}>
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Saldo Aktif</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Total Saldo Aktif</span>
                     <Wallet className="w-4 h-4 text-blue-400" />
                   </div>
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <h2 className="text-2xl font-black mb-2">{formatIDR(summary.balance)}</h2>
+                  <div className="flex items-end justify-between min-w-0">
+                    <div className="min-w-0 flex-1">
+                      <h2 className="text-xl xl:text-2xl font-black mb-2 truncate">{formatIDR(summary.balance)}</h2>
                       <div className={`flex items-center gap-1.5 text-[11px] font-bold px-2 py-1 rounded-full w-max mt-1 ${balanceChange >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
                         {balanceChange >= 0 ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
                         <span>{balanceChange >= 0 ? '+' : ''}{balanceChange}% bulan ini</span>
@@ -129,7 +129,7 @@ export default function DesktopDashboard() {
               <BorderGlow {...GLOW}>
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pemasukan</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Pemasukan</span>
                     <ArrowUpRight className="w-4 h-4 text-emerald-500" />
                   </div>
                   <div className="flex items-end justify-between">
@@ -151,7 +151,7 @@ export default function DesktopDashboard() {
               <BorderGlow {...GLOW}>
                 <div className="p-5">
                   <div className="flex justify-between items-start mb-3">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Pengeluaran</span>
+                    <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Pengeluaran</span>
                     <ArrowDownRight className="w-4 h-4 text-rose-500" />
                   </div>
                   <div className="flex items-end justify-between">
@@ -178,7 +178,7 @@ export default function DesktopDashboard() {
                 <div className="p-6 flex flex-col flex-1">
                   <div className="flex justify-between items-center mb-6 shrink-0">
                     <h3 className="text-sm font-bold">Tren Arus Kas</h3>
-                    <div className="flex gap-4 text-xs font-bold text-slate-400">
+                    <div className="flex gap-4 text-xs font-bold text-muted-foreground">
                       <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500 shadow-sm"></div>Pemasukan</span>
                       <span className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-rose-500 shadow-sm"></div>Pengeluaran</span>
                     </div>
@@ -217,24 +217,24 @@ export default function DesktopDashboard() {
         <div className="xl:col-span-1 flex flex-col gap-6">
           <AnimatedContent distance={40} delay={0.3} direction="vertical">
             <BorderGlow {...GLOW}>
-              <div className="p-4 border-b border-white/10 flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Aksi Cepat</span>
-                <Settings className="w-4 h-4 text-slate-400 cursor-pointer hover:text-white transition-colors" />
+              <div className="p-4 border-b border-border/30 flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Aksi Cepat</span>
+                <Settings className="w-4 h-4 text-muted-foreground cursor-pointer hover:text-foreground transition-colors" />
               </div>
               <div className="p-4 flex flex-col gap-3">
-                <Link to="/add" state={{type: 'income'}} className="flex items-center gap-3 p-3.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors group cursor-pointer">
+                <Link to="/add" state={{type: 'income'}} className="flex items-center gap-3 p-3.5 bg-accent/50 border border-border/30 rounded-xl hover:bg-accent transition-colors group cursor-pointer">
                    <div className="bg-emerald-500/10 p-2 rounded-lg group-hover:bg-emerald-500/20 transition-colors">
                       <Plus className="w-4 h-4 text-emerald-500" />
                    </div>
                    <span className="text-sm font-bold">Tambah Pemasukan</span>
                 </Link>
-                <Link to="/add" state={{type: 'expense'}} className="flex items-center gap-3 p-3.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors group cursor-pointer">
+                <Link to="/add" state={{type: 'expense'}} className="flex items-center gap-3 p-3.5 bg-accent/50 border border-border/30 rounded-xl hover:bg-accent transition-colors group cursor-pointer">
                    <div className="bg-rose-500/10 p-2 rounded-lg group-hover:bg-rose-500/20 transition-colors">
                       <ArrowDownRight className="w-4 h-4 text-rose-500" />
                    </div>
                    <span className="text-sm font-bold">Tambah Pengeluaran</span>
                 </Link>
-                <button onClick={handleScanClick} disabled={isScanning} className="flex items-center gap-3 p-3.5 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 transition-colors group cursor-pointer w-full text-left">
+                <button onClick={handleScanClick} disabled={isScanning} className="flex items-center gap-3 p-3.5 bg-accent/50 border border-border/30 rounded-xl hover:bg-accent transition-colors group cursor-pointer w-full text-left">
                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleFileChange} />
                    <div className="bg-blue-500/10 p-2 rounded-lg group-hover:bg-blue-500/20 transition-colors">
                       <Scan className={`w-4 h-4 text-blue-500 ${isScanning ? "animate-spin" : ""}`} />
@@ -246,22 +246,22 @@ export default function DesktopDashboard() {
           </AnimatedContent>
           <AnimatedContent distance={40} delay={0.5} direction="vertical" className="flex-1 flex flex-col min-h-[220px]">
             <BorderGlow {...GLOW} className="flex-1">
-              <div className="p-4 border-b border-white/10 flex items-center justify-between shrink-0">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Kesehatan Finansial</span>
-                <TrendingUp className="w-4 h-4 text-slate-400" />
+              <div className="p-4 border-b border-border/30 flex items-center justify-between shrink-0">
+                <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Kesehatan Finansial</span>
+                <TrendingUp className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="p-5 flex flex-col justify-center flex-1 gap-4">
                 <div className="flex justify-between items-end">
                   <div>
                     <h4 className="text-sm font-black">{healthLabel}</h4>
-                    <p className="text-[11px] font-medium text-slate-400 mt-0.5">{healthScore >= 50 ? 'Pengeluaran terkendali' : 'Perlu perhatian'}</p>
+                    <p className="text-[11px] font-medium text-muted-foreground mt-0.5">{healthScore >= 50 ? 'Pengeluaran terkendali' : 'Perlu perhatian'}</p>
                   </div>
                   <span className={`text-3xl font-black tracking-tighter ${healthScore >= 75 ? 'text-emerald-500' : healthScore >= 50 ? 'text-amber-500' : 'text-rose-500'}`}>{healthScore}<span className="text-xl">%</span></span>
                 </div>
-                <div className="relative w-full h-3.5 bg-white/10 rounded-full overflow-hidden shadow-inner mt-2">
+                <div className="relative w-full h-3.5 bg-accent rounded-full overflow-hidden shadow-inner mt-2">
                   <div className="absolute top-0 left-0 h-full bg-gradient-to-r from-rose-500 via-amber-400 to-emerald-500 rounded-full transition-all duration-1000" style={{ width: `${healthScore}%` }}></div>
                 </div>
-                <div className="flex justify-between text-[10px] font-bold text-slate-500 px-1 uppercase tracking-wider mt-1">
+                <div className="flex justify-between text-[10px] font-bold text-muted-foreground px-1 uppercase tracking-wider mt-1">
                   <span>Kritis</span>
                   <span>Waspada</span>
                   <span>Aman</span>
@@ -282,7 +282,7 @@ export default function DesktopDashboard() {
                 </div>
                 <div className="overflow-x-auto w-full">
                   <table className="w-full text-sm text-left">
-                    <thead className="text-[11px] uppercase tracking-wider text-slate-400 border-b border-white/10">
+                    <thead className="text-[11px] uppercase tracking-wider text-muted-foreground border-b border-border/30">
                       <tr>
                         <th className="pb-3 font-bold px-4">Tipe Transaksi</th>
                         <th className="pb-3 font-bold px-4">Kategori &amp; Aktivitas</th>
@@ -292,7 +292,7 @@ export default function DesktopDashboard() {
                     </thead>
                     <tbody>
                       {recentActivity.map((item) => (
-                        <tr key={item.id} className="border-b border-white/5 hover:bg-white/5 transition-colors">
+                        <tr key={item.id} className="border-b border-border/20 hover:bg-accent/50 transition-colors">
                           <td className="py-3.5 px-4 w-1/4">
                             <div className="flex items-center gap-3">
                               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shadow-sm ${item.type === 'income' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}`}>
@@ -301,10 +301,10 @@ export default function DesktopDashboard() {
                               <span className="font-bold">{item.type === 'income' ? "Pemasukan" : "Pengeluaran"}</span>
                             </div>
                           </td>
-                          <td className="py-3.5 px-4 text-slate-400 font-medium w-1/3">
+                          <td className="py-3.5 px-4 text-muted-foreground font-medium w-1/3">
                             {item.category_name || item.description || getTranslatedAction(item.action)}
                           </td>
-                          <td className="py-3.5 px-4 text-slate-400 text-xs font-medium w-1/4">{item.date ? new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
+                          <td className="py-3.5 px-4 text-muted-foreground text-xs font-medium w-1/4">{item.date ? new Date(item.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'}</td>
                           <td className="py-3.5 px-4 text-right">
                             <span className={`px-2.5 py-1.5 rounded-full text-[10px] font-bold tracking-wide shadow-sm ${(!item.status || item.status === 'Selesai') ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-amber-500/10 text-amber-500 border border-amber-500/20'}`}>
                               {(!item.status || item.status === 'Selesai') ? "Selesai" : "Tertunda"}
