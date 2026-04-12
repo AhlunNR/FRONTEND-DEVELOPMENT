@@ -2,12 +2,13 @@ import React from 'react';
 import { PieChart, Shield, Wallet, TrendingUp } from 'lucide-react';
 
 export const menuItems = [
-  { label: 'Home', link: '/' },
+  { label: 'Home', link: '#home' },
+  { label: 'Preview', link: '#preview' },
   { label: 'Features', link: '#features' },
 ];
 
 export const socialItems = [
-  { label: 'GitHub', link: 'https://github.com/ZeroLogicDev/' }
+  { label: 'GitHub', link: 'https://github.com/CC26-PS090/FRONTEND-DEVELOPMENT.git' }
 ];
 
 export const desktopItems = [
