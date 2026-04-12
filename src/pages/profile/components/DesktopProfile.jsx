@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useNavigate, Link, NavLink } from "react-router-dom";
 import { transactionService } from "@/services/transaction.service";
+import { gamificationService } from "@/services/gamification.service";
 import AnimatedContent from "@/components/ui/AnimatedContent";
 import {
   User, Settings, Bell, CircleHelp, LogOut, ChevronRight, Shield, Store, Moon, Sun, Pencil, Trophy, Flame, Medal, WalletCards, Camera, X
@@ -22,10 +23,20 @@ export default function DesktopProfile() {
   const [editAvatar, setEditAvatar] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const [totalTransactions, setTotalTransactions] = useState(0);
+  const [badgeCount, setBadgeCount] = useState(0);
+  const [streakDays, setStreakDays] = useState(0);
 
   useEffect(() => {
     transactionService.getTotalCount()
       .then(setTotalTransactions)
+      .catch(console.error);
+
+    gamificationService.getBadges()
+      .then(badges => setBadgeCount(badges.filter(b => b.unlocked).length))
+      .catch(console.error);
+
+    gamificationService.getSummary()
+      .then(data => setStreakDays(data?.streak?.days ?? 0))
       .catch(console.error);
   }, [mode]);
 
@@ -129,7 +140,7 @@ export default function DesktopProfile() {
             <Card className="border-border bg-card shadow-sm overflow-hidden text-center py-4 hover:bg-accent/50 transition-colors cursor-default">
               <div className="flex flex-col items-center gap-2">
                 <div className="p-2.5 bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 rounded-full"><Medal className="w-6 h-6" /></div>
-                <p className="text-2xl font-black text-foreground">12</p>
+                <p className="text-2xl font-black text-foreground">{badgeCount}</p>
                 <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wide">
                   {"Lencana"}
                 </p>
@@ -138,7 +149,7 @@ export default function DesktopProfile() {
             <Card className="border-border bg-card shadow-sm overflow-hidden text-center py-4 hover:bg-accent/50 transition-colors cursor-default">
               <div className="flex flex-col items-center gap-2">
                 <div className="p-2.5 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full"><Flame className="w-6 h-6" /></div>
-                <p className="text-2xl font-black text-foreground">5</p>
+                <p className="text-2xl font-black text-foreground">{streakDays}</p>
                 <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wide">
                   {"Beruntun"}
                 </p>
