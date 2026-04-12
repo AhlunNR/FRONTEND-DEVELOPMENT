@@ -238,28 +238,7 @@ export default function MobileProfile() {
                   {isDark ? "ON" : "OFF"}
                 </span>
               </button>
-              {/* NOTIFICATIONS */}
-              <button
-                onClick={toggleNotifications}
-                className="flex items-center justify-between p-4 hover:bg-accent transition"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-muted text-foreground">
-                    <Bell className="w-4 h-4" />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-sm font-bold text-foreground">
-                      {"Notifikasi Push"}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      {"Atur peringatan transaksi dan promo"}
-                    </p>
-                  </div>
-                </div>
-                <span className={`text-xs font-bold ${notifications ? "text-blue-500" : "text-muted-foreground"}`}>
-                  {notifications ? "ON" : "OFF"}
-                </span>
-              </button>
+
               {/* ACHIEVEMENTS */}
               <Link
                 to="/gamification"
@@ -290,20 +269,7 @@ export default function MobileProfile() {
           </h3>
           <Card className="border-border bg-card shadow-sm overflow-hidden">
             <div className="flex flex-col divide-y divide-border text-foreground">
-              <NavLink
-                to="/profile/settings"
-                className="flex items-center justify-between p-4 hover:bg-accent transition text-left"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-muted">
-                    <Shield className="w-4 h-4" />
-                  </div>
-                  <p className="text-sm font-bold">
-                    {"Ubah PIN & Sandi"}
-                  </p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-              </NavLink>
+
               <NavLink
                 to="/profile/settings"
                 className="flex items-center justify-between p-4 hover:bg-accent transition text-left"

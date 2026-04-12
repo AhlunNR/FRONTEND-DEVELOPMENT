@@ -197,17 +197,7 @@ export default function DesktopProfile() {
                 </div>
                 <span className={`text-sm font-bold w-12 text-center ${isDark ? "text-blue-500" : "text-muted-foreground"}`}>{isDark ? "ON" : "OFF"}</span>
               </button>
-              {/* NOTIFIKASI */}
-              <button onClick={toggleNotifications} className="flex items-center justify-between p-6 hover:bg-accent transition text-left group">
-                <div className="flex items-center gap-5">
-                  <div className="p-4 rounded-xl bg-muted group-hover:scale-110 transition-transform"><Bell className="w-6 h-6" /></div>
-                  <div>
-                    <p className="text-lg font-bold">{"Notifikasi Push"}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{"Atur peringatan transaksi dan promo"}</p>
-                  </div>
-                </div>
-                <span className={`text-sm font-bold w-12 text-center ${notifications ? "text-blue-500" : "text-muted-foreground"}`}>{notifications ? "ON" : "OFF"}</span>
-              </button>
+
               {/* ACHIEVEMENTS */}
               <Link to="/gamification" className="flex items-center justify-between p-6 hover:bg-accent transition block w-full group">
                 <div className="flex items-center gap-5">
@@ -228,13 +218,7 @@ export default function DesktopProfile() {
                 <CardTitle className="text-sm font-bold uppercase tracking-wider text-muted-foreground">{"Akun & Keamanan"}</CardTitle>
               </CardHeader>
               <div className="flex flex-col divide-y divide-border flex-1">
-                <NavLink to="/profile/settings" className="flex items-center justify-between p-6 hover:bg-accent transition text-left group flex-1">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-muted group-hover:scale-110 transition-transform"><Shield className="w-5 h-5 text-emerald-600 dark:text-emerald-400" /></div>
-                    <p className="text-base font-bold">{"Ubah PIN & Sandi"}</p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-foreground transition-colors" />
-                </NavLink>
+
                 <NavLink to="/profile/settings" className="flex items-center justify-between p-6 hover:bg-accent transition text-left group flex-1">
                   <div className="flex items-center gap-4">
                     <div className="p-3 rounded-xl bg-muted group-hover:scale-110 transition-transform"><Settings className="w-5 h-5 text-slate-600 dark:text-slate-400" /></div>
